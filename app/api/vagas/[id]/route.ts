@@ -4,14 +4,12 @@ import Vaga from '@/models/Vaga';
 import mongoose from 'mongoose';
 import { z } from 'zod';
 
-
 const paramsSchema = z.object({
   id: z.string().length(24).regex(/^[0-9a-fA-F]{24}$/)
 });
 
-export async function GET(req: Request, context: { params: { id: string } }) {
-  const { id } = await context.params; 
-
+export async function GET(req: Request, { params }: any) {
+  const { id } = params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
@@ -30,8 +28,8 @@ export async function GET(req: Request, context: { params: { id: string } }) {
   }
 }
 
-export async function PUT(req: Request, context: { params: { id: string } }) {
-  const { id } = await context.params;
+export async function PUT(req: Request, { params }: any) {
+  const { id } = params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
@@ -56,9 +54,8 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
   }
 }
 
-export async function DELETE(req: Request, context: { params: { id: string } }) {
-  const { id } = await context.params;
-
+export async function DELETE(req: Request, { params }: any) {
+  const { id } = params;
 
   const validation = paramsSchema.safeParse({ id });
   if (!validation.success) {

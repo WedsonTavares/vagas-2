@@ -108,7 +108,7 @@ export default function VagaCard({ vaga, onDeleted }: VagaCardProps) {
                 >
                   Excluir
                 </Button>
-                <Button
+                {/* <Button
                   variant="outline"
                   className="ml-auto"
                   type="button"
@@ -118,7 +118,7 @@ export default function VagaCard({ vaga, onDeleted }: VagaCardProps) {
                   }}
                 >
                   Voltar
-                </Button>
+                </Button> */}
               </CardFooter>
             </CardContent>
           </motion.div>

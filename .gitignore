@@ -1,0 +1,48 @@
+# Node modules
+node_modules/
+
+
+# npm install -D tailwindcss postcss autoprefixer
+# npx tailwindcss init -p
+
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js build output
+.next/
+out/
+
+# Production
+/build
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Mac system files
+.DS_Store
+
+# Others
+coverage/
+dist/

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Vaga } from '../types/vaga';
 import { Card, CardHeader, CardContent, CardFooter } from './ui/card';
@@ -17,6 +18,7 @@ interface VagaCardProps {
 export default function VagaCard({ vaga, onDeleted }: VagaCardProps) {
   const [expandido, setExpandido] = useState(false);
   const [mensagem, setMensagem] = useState('');
+  const router = useRouter();
 
   const handleDelete = async (id: string) => {
     try {
@@ -105,6 +107,17 @@ export default function VagaCard({ vaga, onDeleted }: VagaCardProps) {
                   type="button"
                 >
                   Excluir
+                </Button>
+                <Button
+                  variant="outline"
+                  className="ml-auto"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.back();
+                  }}
+                >
+                  Voltar
                 </Button>
               </CardFooter>
             </CardContent>

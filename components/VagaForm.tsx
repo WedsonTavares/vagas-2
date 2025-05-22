@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { Vaga } from '../types/vaga';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -43,6 +44,7 @@ export default function VagaForm({ vaga, onSuccess }: VagaFormProps) {
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
+  const router = useRouter();
 
   async function onSubmit(data: VagaFormData) {
     setLoading(true);
@@ -182,9 +184,19 @@ export default function VagaForm({ vaga, onSuccess }: VagaFormProps) {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? (vaga ? 'Atualizando...' : 'Salvando...') : vaga ? 'Atualizar' : 'Criar'}
-        </Button>
+        <div className="flex gap-4">
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? (vaga ? 'Atualizando...' : 'Salvando...') : vaga ? 'Atualizar' : 'Criar'}
+          </Button>
+        </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full mt-4"
+            onClick={() => router.back()}
+          >
+            Voltar
+          </Button>
       </form>
     </Form>
   );

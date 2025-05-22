@@ -9,7 +9,7 @@ const paramsSchema = z.object({
 });
 
 export async function GET(req: Request, { params }: any) {
-  const { id } = params;
+  const { id } = await params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
@@ -29,7 +29,7 @@ export async function GET(req: Request, { params }: any) {
 }
 
 export async function PUT(req: Request, { params }: any) {
-  const { id } = params;
+  const { id } = await params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ error: 'ID inválido' }, { status: 400 });
@@ -55,7 +55,7 @@ export async function PUT(req: Request, { params }: any) {
 }
 
 export async function DELETE(req: Request, { params }: any) {
-  const { id } = params;
+  const { id } = await params;
 
   const validation = paramsSchema.safeParse({ id });
   if (!validation.success) {

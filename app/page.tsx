@@ -10,5 +10,5 @@ export default function Home() {
     router.push('/vagas');
   }, [router]);
 
-  return null; 
+  return null;
 }

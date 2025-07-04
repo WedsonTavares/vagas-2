@@ -26,7 +26,7 @@
 
 ---
 
-## Como rodar o projeto localmente
+## Como rodar o projeto localmente   
 
 ### Pré-requisitos
 

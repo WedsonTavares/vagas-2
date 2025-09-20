@@ -1,10 +1,70 @@
-# Node modules
-node_modules/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# npm install -D tailwindcss postcss autoprefixer
-# npx tailwindcss init -p
+# testing
+/coverage
 
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# database
+/prisma/dev.db
+/prisma/dev.db-journal
+/prisma/migrations/**/migration.sql
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 # Logs
 logs
@@ -12,37 +72,11 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Next.js build output
-.next/
-out/
+# TanStack Query cache
+.tanstack
 
-# Production
-/build
-
-# Env files
-.env
-.env.local
-.env.*.local
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Editor directories and files
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Mac system files
-.DS_Store
-
-# Others
-coverage/
-dist/
+# Clerk local development
+.clerk/

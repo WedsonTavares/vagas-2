@@ -1,216 +1,428 @@
+# 📋 Controle de Vagas
 
 # 🚀 Controle de Vagas
 
+Sistema completo para gerenciamento de candidaturas de emprego, desenvolvido com as mais modernas tecnologias web.
+
 Sistema completo de gerenciamento de vagas de emprego desenvolvido com **Next.js 15**, **TypeScript**, **Tailwind CSS** e **Clerk** para autenticação.
+
+## 🎯 **Visão Geral**
 
 ## 📋 Índice
 
+Uma aplicação full-stack profissional que permite organizar, acompanhar e gerenciar todas as suas candidaturas de emprego em um só lugar. Com interface moderna, notificações elegantes e funcionalidades avançadas de busca e estatísticas.
+
 - [Tecnologias](#-tecnologias)
-- [Funcionalidades](#-funcionalidades)
+
+## ✨ **Funcionalidades Principais**- [Funcionalidades](#-funcionalidades)
+
 - [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Instalação](#-instalação)
-- [Configuração](#-configuração)
-- [Uso](#-uso)
-- [Componentes](#-componentes)
+
+### 🔐 **Autenticação Segura**- [Instalação](#-instalação)
+
+- Login/Registro com **Clerk Auth**- [Configuração](#-configuração)
+
+- Proteção de rotas e dados por usuário- [Uso](#-uso)
+
+- Interface responsiva para todos os dispositivos- [Componentes](#-componentes)
+
 - [Rotas](#-rotas)
-- [Estilo e Tema](#-estilo-e-tema)
 
-## 🛠 Tecnologias
+### 📊 **Gestão Completa de Vagas**- [Estilo e Tema](#-estilo-e-tema)
 
-### Frontend
+- ➕ **Adicionar vagas** com formulário detalhado
+
+- 📋 **Listar vagas** com cards visuais coloridos por status## 🛠 Tecnologias
+
+- 🔍 **Busca inteligente** por empresa ou título (com debounce)
+
+- 📈 **Estatísticas** com gráficos e métricas### Frontend
+
 - **Next.js 15** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS v4** - Estilização utilitária
-- **Lucide React** - Ícones
-- **Radix UI** - Componentes acessíveis
 
-### Autenticação
+### 🎨 **Interface Moderna**- **TypeScript** - Tipagem estática
+
+- 🌙 **Modo escuro/claro** com transições suaves- **Tailwind CSS v4** - Estilização utilitária
+
+- 🎯 **Cards coloridos** por status da candidatura- **Lucide React** - Ícones
+
+- 📱 **Design responsivo** otimizado para mobile- **Radix UI** - Componentes acessíveis
+
+- 🔔 **Notificações elegantes** (toast profissional)
+
+- ✅ **Modais de confirmação** customizados### Autenticação
+
 - **Clerk** - Autenticação completa (login/registro/perfil)
 
-### Estado e Dados
-- **TanStack Query** - Gerenciamento de estado servidor
-- **Prisma** - ORM para banco de dados (configurado)
+### ⚡ **Recursos Avançados**
+
+- 🗑️ **Exclusão automática** quando rejeitado### Estado e Dados
+
+- 🔄 **Atualizações em tempo real**- **TanStack Query** - Gerenciamento de estado servidor
+
+- 📊 **Dashboard de estatísticas** detalhado- **Prisma** - ORM para banco de dados (configurado)
+
+- 🎛️ **Filtros profissionais** sem sobrecarregar o banco
 
 ### UI/UX
-- **Next Themes** - Suporte a temas claro/escuro
+
+## 🛠 **Stack Tecnológica**- **Next Themes** - Suporte a temas claro/escuro
+
 - **Class Variance Authority** - Variantes de componentes
-- **Tailwind Merge** - Otimização de classes CSS
 
-## ✨ Funcionalidades
+### **Frontend**- **Tailwind Merge** - Otimização de classes CSS
 
-### 🔐 Autenticação
+- ⚛️ **Next.js 15** - Framework React com App Router
+
+- 🎨 **Tailwind CSS v4** - Estilização utilitária moderna## ✨ Funcionalidades
+
+- 🧩 **Radix UI** - Componentes acessíveis e customizáveis
+
+- 📱 **Design System** - Temas e variáveis CSS consistentes### 🔐 Autenticação
+
 - Login/Registro com Clerk
-- Proteção de rotas privadas
-- Perfil de usuário integrado
 
-### 🎨 Interface
-- **Design Responsivo** - Mobile-first approach
+### **Backend & Database**- Proteção de rotas privadas
+
+- 🗄️ **Supabase PostgreSQL** - Banco de dados robusto- Perfil de usuário integrado
+
+- 🔧 **Prisma ORM** - Type-safe database toolkit
+
+- 🔑 **Clerk Authentication** - Autenticação completa### 🎨 Interface
+
+- 🚀 **API Routes** - Endpoints RESTful integrados- **Design Responsivo** - Mobile-first approach
+
 - **Tema Claro/Escuro** - Alternância automática
-- **Navegação Intuitiva** - Sidebar para desktop, dropdown para mobile
-- **Componentes Reutilizáveis** - Sistema de design consistente
 
-### 📱 Navegação
+### **Developer Experience**- **Navegação Intuitiva** - Sidebar para desktop, dropdown para mobile
+
+- 📘 **TypeScript** - Type safety completo- **Componentes Reutilizáveis** - Sistema de design consistente
+
+- 🎯 **Linting/Formatting** - Código consistente
+
+- 🔄 **Hot Reload** - Desenvolvimento ágil### 📱 Navegação
+
 - **Desktop**: Sidebar fixa com logo e links
-- **Mobile**: Navbar compacta com menu dropdown
+
+## 🎨 **Esquema de Cores por Status**- **Mobile**: Navbar compacta com menu dropdown
+
 - **Responsivo**: Adaptação automática por breakpoint
 
-## 📁 Estrutura do Projeto
+### 📋 **Status das Candidaturas:**
 
-```
-controle-vagas/
-├── app/                          # App Router (Next.js 15)
+- 🟡 **Pendente** - Vaga encontrada, ainda não aplicada## 📁 Estrutura do Projeto
+
+- 🔵 **Candidatura Enviada** - Aplicação enviada com sucesso
+
+- 🟣 **Em Entrevista** - Processo seletivo em andamento```
+
+- 🔴 **Rejeitado** - Rejeitado (remove automaticamente)controle-vagas/
+
+- 🟢 **Aceito** - Vaga conquistada! 🎉├── app/                          # App Router (Next.js 15)
+
 │   ├── dashboard/               # Área autenticada
-│   │   ├── add-job/            # Página para adicionar vagas
-│   │   ├── jobs/               # Listagem de vagas
-│   │   ├── stats/              # Estatísticas
-│   │   └── layout.tsx          # Layout do dashboard
-│   ├── globals.css             # Estilos globais e variáveis CSS
-│   ├── layout.tsx              # Layout raiz com providers
-│   ├── page.tsx                # Página inicial (landing)
-│   └── provider.tsx            # Providers (Theme, Query)
-├── components/                  # Componentes reutilizáveis
-│   ├── ui/                     # Componentes base (Radix + Tailwind)
-│   ├── LinksDropdown.tsx       # Menu dropdown mobile
-│   ├── NavBar.tsx              # Navbar desktop
-│   ├── NavBarMobile.tsx        # Navbar mobile
-│   ├── Sidebar.tsx             # Sidebar desktop
-│   ├── ThemeToggle.tsx         # Alternador de tema
-│   └── theme-provider.tsx      # Provider de tema
-├── utils/                      # Utilitários
-│   └── links.tsx               # Configuração de links de navegação
-├── assets/                     # Imagens e recursos
-├── lib/                        # Configurações de bibliotecas
-├── middleware.ts               # Middleware do Clerk
-└── prisma/                     # Schema do banco (a ser configurado)
-```
 
-## 🚀 Instalação
+## ⚙️ **Configuração e Instalação**│   │   ├── add-job/            # Página para adicionar vagas
+
+│   │   ├── jobs/               # Listagem de vagas
+
+### **1. Pré-requisitos**│   │   ├── stats/              # Estatísticas
+
+- Node.js 18+ │   │   └── layout.tsx          # Layout do dashboard
+
+- npm ou yarn│   ├── globals.css             # Estilos globais e variáveis CSS
+
+- Conta no [Supabase](https://supabase.com)│   ├── layout.tsx              # Layout raiz com providers
+
+- Conta no [Clerk](https://clerk.com)│   ├── page.tsx                # Página inicial (landing)
+
+│   └── provider.tsx            # Providers (Theme, Query)
+
+### **2. Clonar o Repositório**├── components/                  # Componentes reutilizáveis
+
+```bash│   ├── ui/                     # Componentes base (Radix + Tailwind)
+
+git clone https://github.com/WedsonTavares/controle-vagas.git│   ├── LinksDropdown.tsx       # Menu dropdown mobile
+
+cd controle-vagas│   ├── NavBar.tsx              # Navbar desktop
+
+```│   ├── NavBarMobile.tsx        # Navbar mobile
+
+│   ├── Sidebar.tsx             # Sidebar desktop
+
+### **3. Instalar Dependências**│   ├── ThemeToggle.tsx         # Alternador de tema
+
+```bash│   └── theme-provider.tsx      # Provider de tema
+
+npm install├── utils/                      # Utilitários
+
+```│   └── links.tsx               # Configuração de links de navegação
+
+├── assets/                     # Imagens e recursos
+
+### **4. Configurar Variáveis de Ambiente**├── lib/                        # Configurações de bibliotecas
+
+```bash├── middleware.ts               # Middleware do Clerk
+
+# Copiar arquivo de exemplo└── prisma/                     # Schema do banco (a ser configurado)
+
+cp .env.example .env```
+
+
+
+# Editar .env com suas credenciais## 🚀 Instalação
+
+```
 
 ```bash
-# Clone o repositório
-git clone https://github.com/WedsonTavares/controle-vagas.git
-cd controle-vagas
 
-# Instale as dependências
-npm install
+**Configurar `.env`:**# Clone o repositório
 
-# Execute em modo desenvolvimento
-npm run dev
+```envgit clone https://github.com/WedsonTavares/controle-vagas.git
+
+# Clerk Authenticationcd controle-vagas
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
+
+CLERK_SECRET_KEY=sk_test_your_secret_here# Instale as dependências
+
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-innpm install
+
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard# Execute em modo desenvolvimento
+
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboardnpm run dev
+
 ```
 
-## ⚙️ Configuração
+# Database
+
+DATABASE_URL="postgresql://postgres:password@host:5432/database"## ⚙️ Configuração
+
+```
 
 ### 1. Variáveis de Ambiente
 
-Crie um arquivo `.env.local`:
+### **5. Configurar Banco de Dados**
 
-```env
+```bashCrie um arquivo `.env.local`:
+
+# Sincronizar schema com o banco
+
+npm run db:push```env
+
 # Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+
+# Gerar Prisma ClientNEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+
+npm run db:generateCLERK_SECRET_KEY=sk_test_...
+
+```NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
-# Database (a ser configurado)
-DATABASE_URL="your-database-url"
-```
+### **6. Executar em Desenvolvimento**
 
-### 2. Clerk Setup
+```bash# Database (a ser configurado)
 
-1. Crie uma conta em [clerk.com](https://clerk.com)
+npm run devDATABASE_URL="your-database-url"
+
+``````
+
+
+
+Acesse: [http://localhost:3000](http://localhost:3000)### 2. Clerk Setup
+
+
+
+## 🚀 **Deploy no Vercel**1. Crie uma conta em [clerk.com](https://clerk.com)
+
 2. Configure as URLs de redirecionamento
-3. Adicione as chaves no `.env.local`
 
-## 🎯 Uso
+### **Deploy Automático:**3. Adicione as chaves no `.env.local`
+
+1. Conecte seu repositório ao Vercel
+
+2. Configure as variáveis de ambiente no dashboard## 🎯 Uso
+
+3. Deploy automático a cada push
 
 ### Páginas Principais
 
-- **`/`** - Landing page com apresentação do sistema
-- **`/dashboard/add-job`** - Formulário para adicionar vagas
-- **`/dashboard/jobs`** - Listagem de todas as vagas
-- **`/dashboard/stats`** - Dashboard com estatísticas
+### **Variáveis de Ambiente (Vercel):**
 
-### Fluxo de Navegação
+```env- **`/`** - Landing page com apresentação do sistema
 
-1. **Usuário não autenticado**: Acessa landing page
-2. **Clica em "Comece Agora"**: Redirecionado para login (Clerk)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...- **`/dashboard/add-job`** - Formulário para adicionar vagas
+
+CLERK_SECRET_KEY=sk_live_...- **`/dashboard/jobs`** - Listagem de todas as vagas
+
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in- **`/dashboard/stats`** - Dashboard com estatísticas
+
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard### Fluxo de Navegação
+
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+
+DATABASE_URL=postgresql://postgres:password@host:5432/database1. **Usuário não autenticado**: Acessa landing page
+
+```2. **Clica em "Comece Agora"**: Redirecionado para login (Clerk)
+
 3. **Após login**: Acesso ao dashboard com sidebar/navbar
-4. **Desktop**: Navegação via sidebar fixa
+
+## 🎯 **Scripts Disponíveis**4. **Desktop**: Navegação via sidebar fixa
+
 5. **Mobile**: Navegação via dropdown na navbar
 
-## 🧩 Componentes
+```bash
 
-### Navegação
+npm run dev          # Executar em desenvolvimento## 🧩 Componentes
 
-#### `Sidebar` (Desktop)
-```tsx
-// Sidebar fixa para telas grandes (lg+)
-// Logo + links de navegação com ícones
+npm run build        # Build para produção
+
+npm run start        # Executar build de produção### Navegação
+
+npm run lint         # Verificar linting
+
+npm run db:push      # Sincronizar schema do banco#### `Sidebar` (Desktop)
+
+npm run db:generate  # Gerar Prisma Client```tsx
+
+npm run db:studio    # Interface visual do banco// Sidebar fixa para telas grandes (lg+)
+
+```// Logo + links de navegação com ícones
+
 // Destaque para página ativa
+
+## 📊 **Funcionalidades Detalhadas**```
+
+
+
+### **🔍 Sistema de Busca**#### `NavBar` (Desktop)
+
+- Pesquisa em tempo real com debounce (300ms)```tsx
+
+- Busca por título da vaga e nome da empresa// Navbar superior para desktop
+
+- Filtros visuais sem requisições desnecessárias// Menu dropdown + ThemeToggle + UserButton
+
+- Interface limpa com contador de resultados```
+
+
+
+### **🎨 Interface Adaptativa**#### `NavBarMobile` (Mobile)
+
+- Modo escuro/claro com persistência```tsx
+
+- Cards responsivos (5 por linha em telas grandes)// Navbar compacta para mobile
+
+- Expansão de cards para visualização completa// Menu dropdown + ThemeToggle + UserButton
+
+- Cores dinâmicas baseadas no status// Classes: block lg:hidden
+
 ```
 
-#### `NavBar` (Desktop)
-```tsx
-// Navbar superior para desktop
-// Menu dropdown + ThemeToggle + UserButton
-```
+### **📱 Mobile First**
 
-#### `NavBarMobile` (Mobile)
-```tsx
-// Navbar compacta para mobile
-// Menu dropdown + ThemeToggle + UserButton
-// Classes: block lg:hidden
-```
+- Design responsivo otimizado#### `LinksDropdown` (Mobile)
 
-#### `LinksDropdown` (Mobile)
-```tsx
-// Dropdown com links de navegação
-// Ícone de hambúrguer + lista de páginas
+- Menu hambúrguer para navegação```tsx
+
+- Touch-friendly para dispositivos móveis// Dropdown com links de navegação
+
+- Layouts adaptáveis para todas as telas// Ícone de hambúrguer + lista de páginas
+
 // Visível apenas em mobile
-```
 
-### Tema
+### **🔔 Sistema de Notificações**```
 
-#### `ThemeToggle`
+- Toasts profissionais com animações
+
+- Modais de confirmação customizados### Tema
+
+- Feedback visual para todas as ações
+
+- Estados de loading e erro#### `ThemeToggle`
+
 ```tsx
-// Botão para alternar tema (light/dark/system)
+
+## 🛡️ **Segurança**// Botão para alternar tema (light/dark/system)
+
 // Ícones animados (sol/lua)
-// Dropdown com opções
-```
 
-#### `ThemeProvider`
-```tsx
-// Provider do next-themes
+- ✅ Autenticação robusta com Clerk// Dropdown com opções
+
+- ✅ Validação de dados no frontend e backend```
+
+- ✅ Proteção de rotas sensíveis
+
+- ✅ Sanitização de inputs#### `ThemeProvider`
+
+- ✅ Environment variables protegidas```tsx
+
+- ✅ CORS configurado adequadamente// Provider do next-themes
+
 // Gerencia estado do tema globalmente
-```
 
-### Sistema de Design
+## 🤝 **Contribuição**```
 
-```tsx
-// Todas as cores usam variáveis CSS
-// Suporte automático a tema claro/escuro
+
+
+1. Fork o projeto### Sistema de Design
+
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)```tsx
+
+4. Push para a branch (`git push origin feature/AmazingFeature`)// Todas as cores usam variáveis CSS
+
+5. Abra um Pull Request// Suporte automático a tema claro/escuro
+
 // Componentes responsivos por padrão
-```
 
-## 🛣 Rotas
+## 📝 **Licença**```
 
-### Públicas
+
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.## 🛣 Rotas
+
+
+
+## 👨‍💻 **Autor**### Públicas
+
 - **`/`** - Landing page
 
-### Protegidas (requer autenticação)
-- **`/dashboard/add-job`** - Adicionar nova vaga
-- **`/dashboard/jobs`** - Listar vagas existentes  
-- **`/dashboard/stats`** - Visualizar estatísticas
+**Wedson Tavares**
 
-### Middleware
-```typescript
-// Proteção automática de rotas /dashboard/*
-// Redirecionamento para login se não autenticado
-// Configurado em middleware.ts
+- GitHub: [@WedsonTavares](https://github.com/WedsonTavares)### Protegidas (requer autenticação)
+
+- LinkedIn: [Wedson Tavares](https://linkedin.com/in/wedson-tavares)- **`/dashboard/add-job`** - Adicionar nova vaga
+
+- **`/dashboard/jobs`** - Listar vagas existentes  
+
+## 🎉 **Agradecimentos**- **`/dashboard/stats`** - Visualizar estatísticas
+
+
+
+- [Next.js](https://nextjs.org) pela excelente framework### Middleware
+
+- [Supabase](https://supabase.com) pela infraestrutura robusta```typescript
+
+- [Clerk](https://clerk.com) pela autenticação completa// Proteção automática de rotas /dashboard/*
+
+- [Tailwind CSS](https://tailwindcss.com) pelo sistema de design// Redirecionamento para login se não autenticado
+
+- [Prisma](https://prisma.io) pelo ORM type-safe// Configurado em middleware.ts
+
 ```
+
+---
 
 ## 🎨 Estilo e Tema
 
+⭐ **Se este projeto te ajudou, considere dar uma estrela no repositório!**
 ### Sistema de Cores
 
 ```css

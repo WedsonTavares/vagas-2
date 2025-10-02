@@ -80,3 +80,5 @@ lerna-debug.log*
 
 # Clerk local development
 .clerk/
+
+/lib/generated/prisma

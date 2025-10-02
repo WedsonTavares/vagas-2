@@ -20,8 +20,9 @@ const Sidebar = () => {
           <Button
             asChild
             key={link.href}
-            variant={pathname === link.href ? 'default' : 'link'}>
-            <Link href={link.href} className='flex items-center gap-x-2'>
+            variant={pathname === link.href ? 'default' : 'link'}
+            className="justify-start">
+            <Link href={link.href} className='flex items-center gap-x-2 w-full text-left'>
               {link.icon} <span className='capitalize'>{link.label}</span>
             </Link>
           </Button>

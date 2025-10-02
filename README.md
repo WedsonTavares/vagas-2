@@ -1,6 +1,5 @@
 # 📋 Controle de Vagas
 
-# 🚀 Controle de Vagas
 
 Sistema completo para gerenciamento de candidaturas de emprego, desenvolvido com as mais modernas tecnologias web.
 
@@ -169,56 +168,56 @@ npm install├── utils/                      # Utilitários
 cp .env.example .env```
 
 
+## 🚀 **Instalação e Configuração**
 
-# Editar .env com suas credenciais## 🚀 Instalação
-
-```
-
+### **1. Clonar o Repositório**
 ```bash
-
-**Configurar `.env`:**# Clone o repositório
-
-```envgit clone https://github.com/WedsonTavares/controle-vagas.git
-
-# Clerk Authenticationcd controle-vagas
-
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
-
-CLERK_SECRET_KEY=sk_test_your_secret_here# Instale as dependências
-
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-innpm install
-
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard# Execute em modo desenvolvimento
-
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboardnpm run dev
-
+git clone https://github.com/WedsonTavares/controle-vagas.git
+cd controle-vagas
 ```
+
+### **2. Instalar Dependências**
+```bash
+npm install
+```
+
+### **3. Configurar Variáveis de Ambiente**
+```bash
+# Copiar arquivo de exemplo
+cp .env.example .env.local
+
+# Editar .env.local com suas credenciais
+```
+
+**Configurar `.env.local`:**
+```env
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
+CLERK_SECRET_KEY=sk_test_your_secret_here
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
 
 # Database
-
-DATABASE_URL="postgresql://postgres:password@host:5432/database"## ⚙️ Configuração
-
+DATABASE_URL="postgresql://postgres:password@host:5432/database"
 ```
 
-### 1. Variáveis de Ambiente
-
-### **5. Configurar Banco de Dados**
-
-```bashCrie um arquivo `.env.local`:
-
+### **4. Configurar Banco de Dados**
+```bash
 # Sincronizar schema com o banco
+npm run db:push
 
-npm run db:push```env
+# Gerar Prisma Client
+npm run db:generate
+```
 
-# Clerk Authentication
+### **5. Executar em Desenvolvimento**
+```bash
+npm run dev
+```
 
-# Gerar Prisma ClientNEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-
-npm run db:generateCLERK_SECRET_KEY=sk_test_...
-
-```NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+Acesse: [http://localhost:3000](http://localhost:3000)
 
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
@@ -238,37 +237,35 @@ Acesse: [http://localhost:3000](http://localhost:3000)### 2. Clerk Setup
 
 ## 🚀 **Deploy no Vercel**1. Crie uma conta em [clerk.com](https://clerk.com)
 
-2. Configure as URLs de redirecionamento
+## 🚀 **Deploy no Vercel**
 
-### **Deploy Automático:**3. Adicione as chaves no `.env.local`
-
+### **Deploy Automático:**
 1. Conecte seu repositório ao Vercel
-
-2. Configure as variáveis de ambiente no dashboard## 🎯 Uso
-
+2. Configure as variáveis de ambiente no dashboard
 3. Deploy automático a cada push
 
-### Páginas Principais
-
 ### **Variáveis de Ambiente (Vercel):**
-
-```env- **`/`** - Landing page com apresentação do sistema
-
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...- **`/dashboard/add-job`** - Formulário para adicionar vagas
-
-CLERK_SECRET_KEY=sk_live_...- **`/dashboard/jobs`** - Listagem de todas as vagas
-
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in- **`/dashboard/stats`** - Dashboard com estatísticas
-
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard### Fluxo de Navegação
-
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+DATABASE_URL=postgresql://postgres:password@host:5432/database
+```
 
-DATABASE_URL=postgresql://postgres:password@host:5432/database1. **Usuário não autenticado**: Acessa landing page
+## 🎯 **Uso do Sistema**
 
-```2. **Clica em "Comece Agora"**: Redirecionado para login (Clerk)
+### **Páginas Principais**
+- **`/`** - Landing page com apresentação do sistema
+- **`/dashboard/add-job`** - Formulário para adicionar vagas
+- **`/dashboard/jobs`** - Listagem de todas as vagas
+- **`/dashboard/stats`** - Dashboard com estatísticas
+
+### **Fluxo de Navegação**
+1. **Usuário não autenticado**: Acessa landing page
+2. **Clica em "Comece Agora"**: Redirecionado para login (Clerk)
 
 3. **Após login**: Acesso ao dashboard com sidebar/navbar
 
@@ -382,11 +379,6 @@ npm run db:studio    # Interface visual do banco// Sidebar fixa para telas grand
 
 // Componentes responsivos por padrão
 
-## 📝 **Licença**```
-
-
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.## 🛣 Rotas
 
 
 
@@ -465,17 +457,6 @@ xl: 1280px  /* Extra large devices */
 "bg-[color:var(--color-sidebar)]"
 "text-[color:var(--color-sidebar-foreground)]"
 ```
-
-## 🔄 Próximos Passos (Backend)
-
-1. **Configurar Prisma ORM**
-2. **Criar modelo de dados para vagas**
-3. **Implementar API routes para CRUD**
-4. **Conectar formulários com backend**
-5. **Implementar sistema de filtros e busca**
-6. **Adicionar validações e tratamento de erros**
-
----
 
 ## 📝 Licença
 

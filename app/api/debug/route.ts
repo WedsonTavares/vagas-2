@@ -31,7 +31,7 @@ export async function GET() {
     console.error('❌ Erro debug:', error)
     return NextResponse.json({
       status: 'error',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     }, { status: 500 })
   }

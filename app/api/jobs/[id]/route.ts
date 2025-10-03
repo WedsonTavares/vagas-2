@@ -105,9 +105,11 @@ export async function PUT(
       },
     });
 
+    console.log(`✅ Job updated successfully: ${id}`);
     return NextResponse.json(updatedJob);
   } catch (error) {
-    console.error('Error updating job:', error);
+    console.error('❌ Error updating job:', error);
+    console.error('❌ Error details:', error instanceof Error ? error.message : String(error));
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

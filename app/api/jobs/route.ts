@@ -3,12 +3,13 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { JobType, JobMode, JobStatus } from '@/types';
 
-// Forçar Node.js Runtime (necessário para Prisma)
-export const runtime = 'nodejs';
-
 // GET /api/jobs - Listar todas as vagas do usuário
 export async function GET(request: NextRequest) {
   try {
+    console.log('🔍 [DEBUG] Iniciando GET /api/jobs')
+    console.log('🔍 [DEBUG] DATABASE_URL existe:', !!process.env.DATABASE_URL)
+    console.log('🔍 [DEBUG] DATABASE_URL preview:', process.env.DATABASE_URL?.substring(0, 50) + '...')
+    
     const { userId } = await auth();
     
     if (!userId) {
@@ -16,11 +17,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    console.log('🔍 [DEBUG] UserId obtido:', userId)
+    console.log('🔍 [DEBUG] Tentando conectar ao Prisma...')
+
+    // Teste de conexão explícito
+    try {
+      await prisma.$connect()
+      console.log('✅ [DEBUG] Prisma conectado com sucesso')
+    } catch (connectError) {
+      console.error('❌ [DEBUG] Erro ao conectar Prisma:', connectError)
+      throw connectError
+    }
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') as JobStatus | null;
     const type = searchParams.get('type') as JobType | null;
     const mode = searchParams.get('mode') as JobMode | null;
 
+    console.log('🔍 [DEBUG] Executando query findMany...')
     const jobs = await prisma.job.findMany({
       where: {
         userId,
@@ -36,7 +50,8 @@ export async function GET(request: NextRequest) {
     console.log(`✅ API GET /jobs: ${jobs.length} vagas encontradas para usuário`);
     return NextResponse.json(jobs);
   } catch (error) {
-    console.error('❌ API GET /jobs: Erro ao buscar vagas:', error);
+    console.error('❌ API GET /jobs: Erro detalhado:', error);
+    console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'Sem stack trace');
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

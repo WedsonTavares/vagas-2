@@ -42,7 +42,7 @@ interface RecentJobsCardProps {
 const RecentJobsCard: React.FC<RecentJobsCardProps> = ({ recentJobs }) => {
   // ========================================
   // MEMOIZAÇÃO PARA PERFORMANCE
-  // ========================================
+
   
   /**
    * jobItems: Lista de componentes de vagas memoizada

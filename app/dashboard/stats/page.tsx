@@ -29,6 +29,7 @@ import { useToast } from '@/components/ui/toast'
 import JobsChart from '@/components/charts/JobsChart'
 import RecentJobsCard from '@/components/charts/RecentJobsCard'
 import StatusCards from '@/components/stats/StatusCardsOptimized'
+import Loading from '@/components/ui/loading'
 import { JobStats } from '@/types'
 
 // ========================================
@@ -247,14 +248,7 @@ const StatsPage = () => {
    * - Não bloqueia a UI (pode ser cancelado)
    */
   if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto p-4">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[color:var(--color-primary)] mx-auto"></div>
-          <p className="mt-4 text-[color:var(--color-muted-foreground)]">Carregando estatísticas...</p>
-        </div>
-      </div>
-    )
+    return <Loading message="Carregando estatísticas..." />
   }
 
   /**

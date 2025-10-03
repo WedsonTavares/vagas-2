@@ -10,14 +10,14 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <ToastProvider>
       <ConfirmationProvider>
-        <main className=' grid lg:grid-cols-5'>
+        <main className='grid lg:grid-cols-5 min-h-screen'>
           <div className='hidden lg:block lg:col-span-1 lg:min-h-screen'>
             <Sidebar />
           </div>
-          <div className='lg:col-span-4'>
+          <div className='lg:col-span-4 flex flex-col'>
             <NavBarMobile className='block lg:hidden' />
             <NavBar className='hidden lg:flex' />
-            <div className='py-16 px-4 sm:px-8 lg:px-16'>
+            <div className='flex-1 py-8 px-4 sm:px-8 lg:px-12'>
               {children}
             </div>
           </div>

@@ -7,8 +7,9 @@ import { JobType, JobMode, JobStatus } from '@/types';
 export async function GET(request: NextRequest) {
   try {
     console.log('🔍 [DEBUG] Iniciando GET /api/jobs')
-    console.log('🔍 [DEBUG] DATABASE_URL existe:', !!process.env.DATABASE_URL)
-    console.log('🔍 [DEBUG] DATABASE_URL preview:', process.env.DATABASE_URL?.substring(0, 50) + '...')
+    console.log('🔍 [DEBUG] POSTGRES_PRISMA_URL existe:', !!process.env.POSTGRES_PRISMA_URL)
+    console.log('🔍 [DEBUG] POSTGRES_URL_NON_POOLING existe:', !!process.env.POSTGRES_URL_NON_POOLING)
+    console.log('🔍 [DEBUG] POSTGRES_PRISMA_URL preview:', process.env.POSTGRES_PRISMA_URL?.substring(0, 50) + '...')
     
     const { userId } = await auth();
     

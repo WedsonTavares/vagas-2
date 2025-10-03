@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
+// Forçar Node.js Runtime (necessário para Prisma)
+export const runtime = 'nodejs';
+
 // GET /api/jobs/rejected - Listar todas as vagas rejeitadas do usuário
 export async function GET(request: NextRequest) {
   try {

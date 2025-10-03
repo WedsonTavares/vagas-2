@@ -3,6 +3,9 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { JobType, JobMode, JobStatus } from '@/types';
 
+// Forçar Node.js Runtime (necessário para Prisma)
+export const runtime = 'nodejs';
+
 // GET /api/jobs - Listar todas as vagas do usuário
 export async function GET(request: NextRequest) {
   try {

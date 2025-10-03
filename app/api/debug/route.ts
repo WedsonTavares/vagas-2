@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Forçar Node.js Runtime (necessário para Prisma)
+export const runtime = 'nodejs';
+
 // Rota de debug para testar banco em produção
 export async function GET() {
   try {

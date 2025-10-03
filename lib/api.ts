@@ -20,12 +20,22 @@ async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
   return response.json();
 }
 
+// Buscar vagas rejeitadas (histórico)
+export async function getRejectedJobs(): Promise<Job[]> {
+  return apiRequest<Job[]>(`${API_BASE}/rejected`);
+}
+
 // Listar todas as vagas (com filtros opcionais)
 export async function getJobs(filters?: {
   status?: string;
   type?: string;
   mode?: string;
 }): Promise<Job[]> {
+  // Se o filtro for para vagas rejeitadas, usar API específica
+  if (filters?.status === 'REJECTED') {
+    return getRejectedJobs();
+  }
+
   const params = new URLSearchParams();
   if (filters?.status) params.append('status', filters.status);
   if (filters?.type) params.append('type', filters.type);
@@ -59,6 +69,13 @@ export async function updateJob(id: string, data: Partial<CreateJobData>): Promi
 // Deletar vaga
 export async function deleteJob(id: string): Promise<{ message: string }> {
   return apiRequest<{ message: string }>(`${API_BASE}/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+// Deletar vaga rejeitada do histórico
+export async function deleteRejectedJob(id: string): Promise<{ message: string }> {
+  return apiRequest<{ message: string }>(`${API_BASE}/rejected?id=${id}`, {
     method: 'DELETE',
   });
 }

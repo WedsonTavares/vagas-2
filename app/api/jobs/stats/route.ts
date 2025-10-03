@@ -70,6 +70,11 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // Contar rejeições históricas
+    const rejectedCount = await prisma.rejectedJobLog.count({
+      where: { userId },
+    });
+
     // Formatando resposta
     const stats = {
       total: totalJobs,
@@ -88,6 +93,9 @@ export async function GET(request: NextRequest) {
       recentApplications,
       recentJobs,
     };
+
+    // Somar rejeições históricas
+    stats.byStatus.REJECTED = rejectedCount;
 
     return NextResponse.json(stats);
   } catch (error) {

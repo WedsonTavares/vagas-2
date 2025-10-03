@@ -171,26 +171,34 @@ const JobCard: React.FC<JobCardProps> = ({
               <div>
                 <h4 className="text-sm font-semibold text-[color:var(--color-primary)] mb-2">Status da Candidatura</h4>
                 <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-[color:var(--color-muted-foreground)]">
-                      Alterar Status:
-                    </label>
-                    <select
-                      value={job.status}
-                      onChange={(e) => {
-                        e.stopPropagation()
-                        onStatusChange(job.id, e.target.value as JobStatus)
-                      }}
-                      className="w-full px-3 py-2 border border-[color:var(--color-border)] rounded-md text-sm bg-[color:var(--color-background)] text-[color:var(--color-foreground)]"
-                    >
-                      <option value={JobStatus.APPLIED}>Candidatura Enviada</option>
-                      <option value={JobStatus.TEST_PENDING}>Teste Pendente</option>
-                      <option value={JobStatus.TEST_COMPLETED}>Teste Concluído</option>
-                      <option value={JobStatus.INTERVIEW}>Em Entrevista</option>
-                      <option value={JobStatus.ACCEPTED}>Aceito</option>
-                      <option value={JobStatus.REJECTED}>Rejeitado</option>
-                    </select>
-                  </div>
+                  {job.status === JobStatus.REJECTED ? (
+                    <div className="bg-red-50 border border-red-200 p-3 rounded-md dark:bg-red-900/30 dark:border-red-700">
+                      <p className="text-sm text-red-800 dark:text-red-200">
+                        📝 Esta vaga foi rejeitada e está apenas no histórico. Não é possível editá-la.
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-xs font-medium mb-1 text-[color:var(--color-muted-foreground)]">
+                        Alterar Status:
+                      </label>
+                      <select
+                        value={job.status}
+                        onChange={(e) => {
+                          e.stopPropagation()
+                          onStatusChange(job.id, e.target.value as JobStatus)
+                        }}
+                        className="w-full px-3 py-2 border border-[color:var(--color-border)] rounded-md text-sm bg-[color:var(--color-background)] text-[color:var(--color-foreground)]"
+                      >
+                        <option value={JobStatus.APPLIED}>Candidatura Enviada</option>
+                        <option value={JobStatus.TEST_PENDING}>Teste Pendente</option>
+                        <option value={JobStatus.TEST_COMPLETED}>Teste Concluído</option>
+                        <option value={JobStatus.INTERVIEW}>Em Entrevista</option>
+                        <option value={JobStatus.ACCEPTED}>Aceito</option>
+                        <option value={JobStatus.REJECTED}>Rejeitado</option>
+                      </select>
+                    </div>
+                  )}
                   
                   {/* Informações de Data */}
                   <div className="bg-[color:var(--color-background)] p-3 rounded-md border border-[color:var(--color-border)]">
@@ -245,28 +253,51 @@ const JobCard: React.FC<JobCardProps> = ({
               
               {/* Botões de Ação */}
               <div className="space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onEdit(job)
-                  }}
-                  className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
-                >
-                  ✏️ Editar Vaga
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete(job.id, job.title)
-                  }}
-                  className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                >
-                  🗑️ Excluir Vaga
-                </Button>
+                {job.status === JobStatus.REJECTED ? (
+                  <div className="space-y-2">
+                    <div className="bg-gray-50 border border-gray-200 p-3 rounded-md dark:bg-gray-900/30 dark:border-gray-700">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                        Vagas rejeitadas não podem ser editadas
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onDelete(job.id, job.title)
+                      }}
+                      className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                    >
+                      🗑️ Remover do Histórico
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onEdit(job)
+                      }}
+                      className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                    >
+                      ✏️ Editar Vaga
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onDelete(job.id, job.title)
+                      }}
+                      className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                    >
+                      🗑️ Excluir Vaga
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

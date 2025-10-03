@@ -13,7 +13,7 @@ export async function GET(
     const { id } = await params;
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
     const job = await prisma.job.findFirst({
@@ -24,14 +24,14 @@ export async function GET(
     });
 
     if (!job) {
-      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
     }
 
     return NextResponse.json(job);
   } catch (error) {
-    console.error('Error fetching job:', error);
+    console.error('Erro ao buscar vaga:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     );
   }
@@ -47,7 +47,7 @@ export async function PUT(
     const { id } = await params;
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -78,9 +78,38 @@ export async function PUT(
     });
 
     if (!existingJob) {
-      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
     }
 
+    // Se o status está sendo mudado para REJECTED, salvar no histórico e excluir
+    if (status === 'REJECTED') {
+      // Salvar no histórico de rejeições
+      await prisma.rejectedJobLog.create({
+        data: {
+          userId,
+          title: existingJob.title,
+          company: existingJob.company,
+        },
+      });
+
+      // Excluir a vaga
+      await prisma.job.delete({
+        where: {
+          id,
+        },
+      });
+
+      console.log(`🔴 Vaga rejeitada e movida para histórico: ${existingJob.title}`);
+      return NextResponse.json({ 
+        message: 'Vaga rejeitada e movida para histórico',
+        rejectedJob: {
+          title: existingJob.title,
+          company: existingJob.company
+        }
+      });
+    }
+
+    // Para outros status, fazer update normal
     const updatedJob = await prisma.job.update({
       where: {
         id,
@@ -105,13 +134,13 @@ export async function PUT(
       },
     });
 
-    console.log(`✅ Job updated successfully: ${id}`);
+    console.log(`✅ Vaga atualizada com sucesso: ${id}`);
     return NextResponse.json(updatedJob);
   } catch (error) {
-    console.error('❌ Error updating job:', error);
-    console.error('❌ Error details:', error instanceof Error ? error.message : String(error));
+    console.error('❌ Erro ao atualizar vaga:', error);
+    console.error('❌ Detalhes do erro:', error instanceof Error ? error.message : String(error));
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     );
   }
@@ -127,7 +156,7 @@ export async function DELETE(
     const { id } = await params;
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
     // Verificar se a vaga existe e pertence ao usuário
@@ -139,7 +168,7 @@ export async function DELETE(
     });
 
     if (!existingJob) {
-      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
     }
 
     await prisma.job.delete({
@@ -148,11 +177,11 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json({ message: 'Job deleted successfully' });
+    return NextResponse.json({ message: 'Vaga deletada com sucesso' });
   } catch (error) {
-    console.error('Error deleting job:', error);
+    console.error('Erro ao deletar vaga:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Erro interno do servidor' },
       { status: 500 }
     );
   }

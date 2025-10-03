@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { getJobs, deleteJob, updateJob } from '@/lib/api'
+import { getJobs, deleteJob, deleteRejectedJob, updateJob } from '@/lib/api'
 import { Job, JobType, JobMode, JobStatus } from '@/types'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from '@/components/ui/toast'
@@ -40,7 +40,7 @@ const JobsPage = () => {
 
   useEffect(() => {
     loadJobs()
-  }, [])
+  }, [statusFilter]) // Recarregar quando statusFilter mudar
 
   // Ler filtro de status da URL
   useEffect(() => {
@@ -60,11 +60,12 @@ const JobsPage = () => {
   const loadJobs = async () => {
     try {
       setLoading(true)
-      // Carrega todas as vagas sem filtros (otimizado)
-      const data = await getJobs({})
+      // Se há filtro de status, usar filtro específico, senão carregar todas
+      const filters = statusFilter ? { status: statusFilter } : {}
+      const data = await getJobs(filters)
       setJobs(data)
       setTotalJobs(data.length)
-      setFilteredJobs(data) // Inicialmente mostra todas
+      setFilteredJobs(data) // Inicialmente mostra todas as carregadas
     } catch (error) {
       console.error('Erro ao carregar vagas:', error)
       addToast({
@@ -91,10 +92,8 @@ const JobsPage = () => {
       })
     }
 
-    // Filtrar por status
-    if (statusFilter) {
-      filtered = filtered.filter(job => job.status === statusFilter)
-    }
+    // Nota: Filtro de status já é aplicado no carregamento das vagas
+    // Para filtros de "REJECTED", as vagas já vêm da API específica
 
     setFilteredJobs(filtered)
   }
@@ -153,29 +152,42 @@ const JobsPage = () => {
   }
 
   const handleDelete = async (jobId: string, jobTitle: string) => {
+    const job = jobs.find(j => j.id === jobId)
+    const isRejected = job?.status === JobStatus.REJECTED
+    
     const confirmed = await confirm({
-      title: 'Excluir Vaga',
-      description: `Tem certeza que deseja excluir a vaga "${jobTitle}"? Esta ação não pode ser desfeita.`,
-      confirmLabel: 'Sim, Excluir',
+      title: isRejected ? 'Remover do Histórico' : 'Excluir Vaga',
+      description: isRejected 
+        ? `Tem certeza que deseja remover a vaga "${jobTitle}" do histórico de rejeitadas? Esta ação não pode ser desfeita.`
+        : `Tem certeza que deseja excluir a vaga "${jobTitle}"? Esta ação não pode ser desfeita.`,
+      confirmLabel: isRejected ? 'Sim, Remover' : 'Sim, Excluir',
       cancelLabel: 'Cancelar',
       type: 'danger'
     })
     
     if (confirmed) {
       try {
-        await deleteJob(jobId)
+        if (isRejected) {
+          await deleteRejectedJob(jobId)
+        } else {
+          await deleteJob(jobId)
+        }
         await loadJobs()
         addToast({
           type: 'success',
-          title: 'Vaga excluída',
-          description: `A vaga "${jobTitle}" foi excluída com sucesso.`
+          title: isRejected ? 'Removida do histórico' : 'Vaga excluída',
+          description: isRejected 
+            ? `A vaga "${jobTitle}" foi removida do histórico com sucesso.`
+            : `A vaga "${jobTitle}" foi excluída com sucesso.`
         })
       } catch (error) {
         console.error('Erro ao excluir vaga:', error)
         addToast({
           type: 'error',
-          title: 'Erro ao excluir vaga',
-          description: 'Não foi possível excluir a vaga. Tente novamente.'
+          title: isRejected ? 'Erro ao remover do histórico' : 'Erro ao excluir vaga',
+          description: isRejected 
+            ? 'Não foi possível remover a vaga do histórico. Tente novamente.'
+            : 'Não foi possível excluir a vaga. Tente novamente.'
         })
       }
     }

@@ -58,3 +58,13 @@ enum JobStatus {
   ACCEPTED    // Aceito
   REJECTED    // Rejeitado
 }
+
+model RejectedJobLog {
+  id         String   @id @default(cuid())
+  userId     String
+  title      String
+  company    String
+  rejectedAt DateTime @default(now())
+
+  @@map("rejected_jobs")
+}

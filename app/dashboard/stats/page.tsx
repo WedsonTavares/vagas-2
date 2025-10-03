@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { getJobStats } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/toast'
+import JobsChart from '@/components/charts/JobsChart'
+import RecentJobsCard from '@/components/charts/RecentJobsCard'
 
 interface JobStats {
   total: number;
@@ -54,7 +56,6 @@ const StatsPage = () => {
       'TEST_PENDING': 'bg-yellow-100 text-yellow-800 border-yellow-200',
       'TEST_COMPLETED': 'bg-orange-100 text-orange-800 border-orange-200',
       'INTERVIEW': 'bg-purple-100 text-purple-800 border-purple-200',
-      'REJECTED': 'bg-red-100 text-red-800 border-red-200',
       'ACCEPTED': 'bg-green-100 text-green-800 border-green-200',
     }
     return colors[status] || colors['APPLIED']
@@ -66,7 +67,6 @@ const StatsPage = () => {
       'TEST_PENDING': 'Teste Pendente',
       'TEST_COMPLETED': 'Teste Concluído',
       'INTERVIEW': 'Em Entrevista',
-      'REJECTED': 'Rejeitado',
       'ACCEPTED': 'Aceito',
     }
     return labels[status] || status
@@ -147,7 +147,7 @@ const StatsPage = () => {
       </div>
 
       {/* Cartões de Resumo - Clicáveis */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         {/* Candidatura Enviada */}
         <button
           onClick={() => navigateToJobsWithFilter('APPLIED')}
@@ -218,83 +218,17 @@ const StatsPage = () => {
           </div>
         </button>
 
-        {/* Rejeitadas */}
-        <button
-          onClick={() => navigateToJobsWithFilter('REJECTED')}
-          className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] hover:shadow-lg hover:border-red-300 transition-all duration-200 text-left group"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-medium text-[color:var(--color-muted-foreground)] group-hover:text-red-600">Rejeitadas</p>
-              <p className="text-2xl font-bold text-red-600">{stats.byStatus.REJECTED || 0}</p>
-            </div>
-            <div className="text-2xl">❌</div>
-          </div>
-        </button>
       </div>
 
-      {/* Card de Resumo Total */}
+      {/* Gráfico e Vagas Recentes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <button
-          onClick={() => navigateToJobsWithFilter()}
-          className="bg-gradient-to-r from-[color:var(--color-primary)]/10 to-[color:var(--color-primary)]/5 p-6 rounded-xl border border-[color:var(--color-primary)]/20 hover:shadow-lg hover:border-[color:var(--color-primary)]/40 transition-all duration-200 text-left group"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[color:var(--color-primary)] group-hover:text-[color:var(--color-primary)]">Total de Vagas</p>
-              <p className="text-4xl font-bold text-[color:var(--color-primary)]">{stats.total}</p>
-            </div>
-            <div className="text-4xl">�</div>
-          </div>
-          <p className="text-xs text-[color:var(--color-muted-foreground)] mt-2">Clique para ver todas</p>
-        </button>
+        {/* Gráfico de Distribuição */}
+        <JobsChart stats={stats} />
 
-        <div className="bg-[color:var(--color-card)] p-6 rounded-xl border border-[color:var(--color-border)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[color:var(--color-muted-foreground)]">Candidaturas Recentes</p>
-              <p className="text-4xl font-bold text-[color:var(--color-card-foreground)]">{stats.recentApplications}</p>
-            </div>
-            <div className="text-4xl">🕒</div>
-          </div>
-          <p className="text-xs text-[color:var(--color-muted-foreground)] mt-2">Últimos 7 dias</p>
-        </div>
+        {/* Vagas Recentes */}
+        <RecentJobsCard recentJobs={stats.recentJobs} />
       </div>
 
-
-      {/* Vagas Recentes */}
-      {stats.recentJobs.length > 0 && (
-        <div className="bg-[color:var(--color-card)] p-6 rounded-lg border border-[color:var(--color-border)]">
-          <h3 className="text-xl font-semibold mb-4 text-[color:var(--color-card-foreground)]">
-            Vagas Recentes
-          </h3>
-          <div className="space-y-3">
-            {stats.recentJobs.map((job) => (
-              <div
-                key={job.id}
-                className="flex items-center justify-between p-3 bg-[color:var(--color-secondary)] rounded-lg"
-              >
-                <div>
-                  <p className="font-medium text-[color:var(--color-secondary-foreground)]">
-                    {job.title}
-                  </p>
-                  <p className="text-sm text-[color:var(--color-muted-foreground)]">
-                    {job.company}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(job.status)}`}>
-                    {getStatusLabel(job.status)}
-                  </span>
-                  <span className="text-sm text-[color:var(--color-muted-foreground)]">
-                    {new Date(job.createdAt).toLocaleDateString('pt-BR')}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Estado Vazio */}
       {stats.total === 0 && (

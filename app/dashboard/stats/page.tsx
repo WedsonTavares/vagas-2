@@ -92,6 +92,14 @@ const StatsPage = () => {
     return labels[mode] || mode
   }
 
+  const navigateToJobsWithFilter = (status?: string) => {
+    if (status) {
+      router.push(`/dashboard/jobs?status=${status}`)
+    } else {
+      router.push('/dashboard/jobs')
+    }
+  }
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto p-6">
@@ -138,47 +146,118 @@ const StatsPage = () => {
         </Button>
       </div>
 
-      {/* Cartões de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-[color:var(--color-card)] p-6 rounded-lg border border-[color:var(--color-border)]">
+      {/* Cartões de Resumo - Clicáveis */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        {/* Candidatura Enviada */}
+        <button
+          onClick={() => navigateToJobsWithFilter('APPLIED')}
+          className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] hover:shadow-lg hover:border-blue-300 transition-all duration-200 text-left group"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[color:var(--color-muted-foreground)]">Candidatura Enviada</p>
-              <p className="text-3xl font-bold text-blue-600">{stats.byStatus.APPLIED || 0}</p>
+              <p className="text-xs font-medium text-[color:var(--color-muted-foreground)] group-hover:text-blue-600">Candidatura Enviada</p>
+              <p className="text-2xl font-bold text-blue-600">{stats.byStatus.APPLIED || 0}</p>
+            </div>
+            <div className="text-2xl">📝</div>
+          </div>
+        </button>
+
+        {/* Teste Pendente */}
+        <button
+          onClick={() => navigateToJobsWithFilter('TEST_PENDING')}
+          className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] hover:shadow-lg hover:border-yellow-300 transition-all duration-200 text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-[color:var(--color-muted-foreground)] group-hover:text-yellow-600">Teste Pendente</p>
+              <p className="text-2xl font-bold text-yellow-600">{stats.byStatus.TEST_PENDING || 0}</p>
+            </div>
+            <div className="text-2xl">⏳</div>
+          </div>
+        </button>
+
+        {/* Teste Concluído */}
+        <button
+          onClick={() => navigateToJobsWithFilter('TEST_COMPLETED')}
+          className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] hover:shadow-lg hover:border-orange-300 transition-all duration-200 text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-[color:var(--color-muted-foreground)] group-hover:text-orange-600">Teste Concluído</p>
+              <p className="text-2xl font-bold text-orange-600">{stats.byStatus.TEST_COMPLETED || 0}</p>
+            </div>
+            <div className="text-2xl">✅</div>
+          </div>
+        </button>
+
+        {/* Em Entrevista */}
+        <button
+          onClick={() => navigateToJobsWithFilter('INTERVIEW')}
+          className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] hover:shadow-lg hover:border-purple-300 transition-all duration-200 text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-[color:var(--color-muted-foreground)] group-hover:text-purple-600">Em Entrevista</p>
+              <p className="text-2xl font-bold text-purple-600">{stats.byStatus.INTERVIEW || 0}</p>
+            </div>
+            <div className="text-2xl">�</div>
+          </div>
+        </button>
+
+        {/* Aceitas */}
+        <button
+          onClick={() => navigateToJobsWithFilter('ACCEPTED')}
+          className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] hover:shadow-lg hover:border-green-300 transition-all duration-200 text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-[color:var(--color-muted-foreground)] group-hover:text-green-600">Aceitas</p>
+              <p className="text-2xl font-bold text-green-600">{stats.byStatus.ACCEPTED || 0}</p>
+            </div>
+            <div className="text-2xl">🎉</div>
+          </div>
+        </button>
+
+        {/* Rejeitadas */}
+        <button
+          onClick={() => navigateToJobsWithFilter('REJECTED')}
+          className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] hover:shadow-lg hover:border-red-300 transition-all duration-200 text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium text-[color:var(--color-muted-foreground)] group-hover:text-red-600">Rejeitadas</p>
+              <p className="text-2xl font-bold text-red-600">{stats.byStatus.REJECTED || 0}</p>
+            </div>
+            <div className="text-2xl">❌</div>
+          </div>
+        </button>
+      </div>
+
+      {/* Card de Resumo Total */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <button
+          onClick={() => navigateToJobsWithFilter()}
+          className="bg-gradient-to-r from-[color:var(--color-primary)]/10 to-[color:var(--color-primary)]/5 p-6 rounded-xl border border-[color:var(--color-primary)]/20 hover:shadow-lg hover:border-[color:var(--color-primary)]/40 transition-all duration-200 text-left group"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-[color:var(--color-primary)] group-hover:text-[color:var(--color-primary)]">Total de Vagas</p>
+              <p className="text-4xl font-bold text-[color:var(--color-primary)]">{stats.total}</p>
             </div>
             <div className="text-4xl">�</div>
           </div>
-        </div>
+          <p className="text-xs text-[color:var(--color-muted-foreground)] mt-2">Clique para ver todas</p>
+        </button>
 
-        <div className="bg-[color:var(--color-card)] p-6 rounded-lg border border-[color:var(--color-border)]">
+        <div className="bg-[color:var(--color-card)] p-6 rounded-xl border border-[color:var(--color-border)]">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-[color:var(--color-muted-foreground)]">Candidaturas Recentes</p>
-              <p className="text-3xl font-bold text-[color:var(--color-card-foreground)]">{stats.recentApplications}</p>
+              <p className="text-4xl font-bold text-[color:var(--color-card-foreground)]">{stats.recentApplications}</p>
             </div>
             <div className="text-4xl">🕒</div>
           </div>
           <p className="text-xs text-[color:var(--color-muted-foreground)] mt-2">Últimos 7 dias</p>
-        </div>
-
-        <div className="bg-[color:var(--color-card)] p-6 rounded-lg border border-[color:var(--color-border)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[color:var(--color-muted-foreground)]">Em Entrevista</p>
-              <p className="text-3xl font-bold text-purple-600">{stats.byStatus.INTERVIEW || 0}</p>
-            </div>
-            <div className="text-4xl">💼</div>
-          </div>
-        </div>
-
-        <div className="bg-[color:var(--color-card)] p-6 rounded-lg border border-[color:var(--color-border)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[color:var(--color-muted-foreground)]">Aceitas</p>
-              <p className="text-3xl font-bold text-green-600">{stats.byStatus.ACCEPTED || 0}</p>
-            </div>
-            <div className="text-4xl">✅</div>
-          </div>
         </div>
       </div>
 

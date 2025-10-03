@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { getJobs, deleteJob, updateJob } from '@/lib/api'
 import { Job, JobType, JobMode, JobStatus } from '@/types'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from '@/components/ui/toast'
 import { useConfirmation } from '@/components/ui/confirmation'
 import JobsHeader from '@/components/jobs/JobsHeader'
@@ -14,12 +14,14 @@ import JobEditModal from '@/components/jobs/JobEditModal'
 
 const JobsPage = () => {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { addToast } = useToast()
   const { confirm } = useConfirmation()
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string | null>(null)
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([])
   const [totalJobs, setTotalJobs] = useState(0)
   const [editingJob, setEditingJob] = useState<Job | null>(null)
@@ -40,6 +42,12 @@ const JobsPage = () => {
     loadJobs()
   }, [])
 
+  // Ler filtro de status da URL
+  useEffect(() => {
+    const status = searchParams.get('status')
+    setStatusFilter(status)
+  }, [searchParams])
+
   // Debounce para o filtro de pesquisa
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -47,7 +55,7 @@ const JobsPage = () => {
     }, 300) // 300ms de debounce
 
     return () => clearTimeout(timer)
-  }, [searchTerm, jobs])
+  }, [searchTerm, statusFilter, jobs])
 
   const loadJobs = async () => {
     try {
@@ -70,17 +78,23 @@ const JobsPage = () => {
   }
 
   const filterJobs = () => {
-    if (!searchTerm.trim()) {
-      setFilteredJobs(jobs)
-      return
+    let filtered = jobs
+
+    // Filtrar por termo de pesquisa
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase()
+      filtered = filtered.filter(job => {
+        const titleMatch = job.title.toLowerCase().includes(searchLower)
+        const companyMatch = job.company.toLowerCase().includes(searchLower)
+        const locationMatch = job.location?.toLowerCase().includes(searchLower) || false
+        return titleMatch || companyMatch || locationMatch
+      })
     }
 
-    const filtered = jobs.filter(job => {
-      const searchLower = searchTerm.toLowerCase()
-      const titleMatch = job.title.toLowerCase().includes(searchLower)
-      const companyMatch = job.company.toLowerCase().includes(searchLower)
-      return titleMatch || companyMatch
-    })
+    // Filtrar por status
+    if (statusFilter) {
+      filtered = filtered.filter(job => job.status === statusFilter)
+    }
 
     setFilteredJobs(filtered)
   }
@@ -230,6 +244,7 @@ const JobsPage = () => {
         totalJobs={totalJobs}
         filteredJobs={filteredJobs.length}
         searchTerm={searchTerm}
+        statusFilter={statusFilter}
       />
 
       <JobsSearchAndEmpty 

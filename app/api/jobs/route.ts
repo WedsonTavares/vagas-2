@@ -78,6 +78,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Verificar se já existe uma vaga com o mesmo applicationUrl
+    if (applicationUrl) {
+      const existingJob = await prisma.job.findFirst({
+        where: {
+          userId,
+          applicationUrl,
+        },
+      });
+
+      if (existingJob) {
+        return NextResponse.json(
+          { error: 'Você já se candidatou a essa vaga' },
+          { status: 409 }
+        );
+      }
+    }
+
     const job = await prisma.job.create({
       data: {
         userId,

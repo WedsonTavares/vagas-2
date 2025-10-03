@@ -49,13 +49,23 @@ const AddJobPage = () => {
         description: `A vaga "${formData.title}" foi adicionada à sua lista de candidaturas.`
       })
       router.push('/dashboard/jobs')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao criar vaga:', error)
-      addToast({
-        type: 'error',
-        title: 'Erro ao criar vaga',
-        description: 'Não foi possível criar a vaga. Verifique os dados e tente novamente.'
-      })
+      
+      // Verificar se é erro de URL duplicada
+      if (error.message === 'Você já se candidatou a essa vaga') {
+        addToast({
+          type: 'error',
+          title: 'Vaga já cadastrada',
+          description: 'Você já se candidatou a essa vaga. Verifique a URL informada.'
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Erro ao criar vaga',
+          description: 'Não foi possível criar a vaga. Verifique os dados e tente novamente.'
+        })
+      }
     } finally {
       setIsSubmitting(false)
     }

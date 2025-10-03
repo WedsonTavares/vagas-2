@@ -21,7 +21,7 @@ model Job {
   location    String?
   type        JobType  @default(FULL_TIME)
   mode        JobMode  @default(REMOTE)
-  status      JobStatus @default(PENDING)
+  status      JobStatus @default(APPLIED)
   description String?
   requirements String?
   salary      String?
@@ -51,9 +51,10 @@ enum JobMode {
 }
 
 enum JobStatus {
-  PENDING     // Candidatura pendente
   APPLIED     // Candidatura enviada
+  TEST_PENDING   // Teste pendente
+  TEST_COMPLETED // Teste concluído
   INTERVIEW   // Em processo de entrevista
-  REJECTED    // Rejeitado
   ACCEPTED    // Aceito
+  REJECTED    // Rejeitado
 }

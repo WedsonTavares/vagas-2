@@ -14,11 +14,12 @@ export enum JobMode {
 }
 
 export enum JobStatus {
-  PENDING = 'PENDING',
   APPLIED = 'APPLIED',
+  TEST_PENDING = 'TEST_PENDING',
+  TEST_COMPLETED = 'TEST_COMPLETED',
   INTERVIEW = 'INTERVIEW',
-  REJECTED = 'REJECTED',
   ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
 }
 
 export interface CreateJobData {

@@ -200,33 +200,36 @@ const JobsPage = () => {
 
   const getCardBorderColor = (status: JobStatus) => {
     const colors = {
-      [JobStatus.PENDING]: 'border-yellow-300 bg-yellow-50/30 dark:border-yellow-600 dark:bg-yellow-900/20',
-      [JobStatus.APPLIED]: 'border-blue-300 bg-blue-50/30 dark:border-blue-500 dark:bg-blue-900/20',
-      [JobStatus.INTERVIEW]: 'border-purple-300 bg-purple-50/30 dark:border-purple-500 dark:bg-purple-900/20',
-      [JobStatus.REJECTED]: 'border-red-300 bg-red-50/30 dark:border-red-500 dark:bg-red-900/20',
-      [JobStatus.ACCEPTED]: 'border-green-300 bg-green-50/30 dark:border-green-500 dark:bg-green-900/20',
+      [JobStatus.APPLIED]: 'border-blue-300 bg-blue-50/30 dark:border-blue-600 dark:bg-blue-900/20',
+      [JobStatus.TEST_PENDING]: 'border-yellow-300 bg-yellow-50/30 dark:border-yellow-600 dark:bg-yellow-900/20',
+      [JobStatus.TEST_COMPLETED]: 'border-orange-300 bg-orange-50/30 dark:border-orange-600 dark:bg-orange-900/20',
+      [JobStatus.INTERVIEW]: 'border-purple-300 bg-purple-50/30 dark:border-purple-600 dark:bg-purple-900/20',
+      [JobStatus.ACCEPTED]: 'border-green-300 bg-green-50/30 dark:border-green-600 dark:bg-green-900/20',
+      [JobStatus.REJECTED]: 'border-red-300 bg-red-50/30 dark:border-red-600 dark:bg-red-900/20',
     }
-    return colors[status] || colors[JobStatus.PENDING]
+    return colors[status] || colors[JobStatus.APPLIED]
   }
 
   const getStatusColor = (status: JobStatus) => {
     const colors = {
-      [JobStatus.PENDING]: 'text-yellow-600 dark:text-yellow-400',
       [JobStatus.APPLIED]: 'text-blue-600 dark:text-blue-400',
+      [JobStatus.TEST_PENDING]: 'text-yellow-600 dark:text-yellow-400',
+      [JobStatus.TEST_COMPLETED]: 'text-orange-600 dark:text-orange-400',
       [JobStatus.INTERVIEW]: 'text-purple-600 dark:text-purple-400',
-      [JobStatus.REJECTED]: 'text-red-600 dark:text-red-400',
       [JobStatus.ACCEPTED]: 'text-green-600 dark:text-green-400',
+      [JobStatus.REJECTED]: 'text-red-600 dark:text-red-400',
     }
-    return colors[status] || colors[JobStatus.PENDING]
+    return colors[status] || colors[JobStatus.APPLIED]
   }
 
   const getStatusLabel = (status: JobStatus) => {
     const labels = {
-      [JobStatus.PENDING]: 'Pendente',
       [JobStatus.APPLIED]: 'Candidatura Enviada',
+      [JobStatus.TEST_PENDING]: 'Teste Pendente',
+      [JobStatus.TEST_COMPLETED]: 'Teste Concluído',
       [JobStatus.INTERVIEW]: 'Em Entrevista',
-      [JobStatus.REJECTED]: 'Rejeitado',
       [JobStatus.ACCEPTED]: 'Aceito',
+      [JobStatus.REJECTED]: 'Rejeitado',
     }
     return labels[status] || status
   }
@@ -481,11 +484,12 @@ const JobsPage = () => {
                                 }}
                                 className="w-full px-3 py-2 border border-[color:var(--color-border)] rounded-md text-sm bg-[color:var(--color-background)] text-[color:var(--color-foreground)]"
                               >
-                                <option value={JobStatus.PENDING}>Pendente</option>
                                 <option value={JobStatus.APPLIED}>Candidatura Enviada</option>
+                                <option value={JobStatus.TEST_PENDING}>Teste Pendente</option>
+                                <option value={JobStatus.TEST_COMPLETED}>Teste Concluído</option>
                                 <option value={JobStatus.INTERVIEW}>Em Entrevista</option>
-                                <option value={JobStatus.REJECTED}>Rejeitado</option>
                                 <option value={JobStatus.ACCEPTED}>Aceito</option>
+                                <option value={JobStatus.REJECTED}>Rejeitado</option>
                               </select>
                             </div>
                             

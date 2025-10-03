@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
     const jobs = await prisma.job.findMany({
       where: {
         userId,
-        ...(status && { status }),
-        ...(type && { type }),
-        ...(mode && { mode }),
+        ...(status && { status: status as any }),
+        ...(type && { type: type as any }),
+        ...(mode && { mode: mode as any }),
       },
       orderBy: {
         createdAt: 'desc',
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       location,
       type = 'FULL_TIME',
       mode = 'REMOTE',
-      status = 'PENDING',
+      status = 'APPLIED',
       description,
       requirements,
       salary,

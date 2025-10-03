@@ -50,19 +50,21 @@ const StatsPage = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      'PENDING': 'bg-yellow-100 text-yellow-800 border-yellow-200',
       'APPLIED': 'bg-blue-100 text-blue-800 border-blue-200',
+      'TEST_PENDING': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'TEST_COMPLETED': 'bg-orange-100 text-orange-800 border-orange-200',
       'INTERVIEW': 'bg-purple-100 text-purple-800 border-purple-200',
       'REJECTED': 'bg-red-100 text-red-800 border-red-200',
       'ACCEPTED': 'bg-green-100 text-green-800 border-green-200',
     }
-    return colors[status] || colors['PENDING']
+    return colors[status] || colors['APPLIED']
   }
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      'PENDING': 'Pendente',
       'APPLIED': 'Candidatura Enviada',
+      'TEST_PENDING': 'Teste Pendente',
+      'TEST_COMPLETED': 'Teste Concluído',
       'INTERVIEW': 'Em Entrevista',
       'REJECTED': 'Rejeitado',
       'ACCEPTED': 'Aceito',

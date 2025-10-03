@@ -17,7 +17,7 @@ const AddJobPage = () => {
     location: '',
     type: JobType.FULL_TIME,
     mode: JobMode.REMOTE,
-    status: JobStatus.PENDING,
+    status: JobStatus.APPLIED,
     description: '',
     requirements: '',
     salary: '',
@@ -214,11 +214,12 @@ const AddJobPage = () => {
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-[color:var(--color-border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)] bg-[color:var(--color-background)] text-[color:var(--color-foreground)]"
               >
-                <option value={JobStatus.PENDING}>Pendente</option>
                 <option value={JobStatus.APPLIED}>Candidatura Enviada</option>
+                <option value={JobStatus.TEST_PENDING}>Teste Pendente</option>
+                <option value={JobStatus.TEST_COMPLETED}>Teste Concluído</option>
                 <option value={JobStatus.INTERVIEW}>Em Entrevista</option>
-                <option value={JobStatus.REJECTED}>Rejeitado</option>
                 <option value={JobStatus.ACCEPTED}>Aceito</option>
+                <option value={JobStatus.REJECTED}>Rejeitado</option>
               </select>
             </div>
           </div>

@@ -25,7 +25,7 @@ export default function Home() {
             Simplifique o processo de candidaturas com nossa plataforma intuitiva e eficiente.
           </p>
           <Button className="mt-6 px-8 py-3 text-lg" asChild>
-            <Link href={"/dashboard/add-job"}>Comece Agora</Link>
+            <Link href={"/dashboard"}>Comece Agora</Link>
           </Button>
         </div>
         <div className="hidden lg:flex justify-center">

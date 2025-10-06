@@ -33,6 +33,7 @@ function validateEnvironment() {
     .map(([key]) => key);
 
   if (missingVars.length > 0) {
+    // eslint-disable-next-line no-console
     console.warn(
       `⚠️ Variáveis de ambiente possivelmente não configuradas: ${missingVars.join(
         ', '
@@ -46,6 +47,7 @@ function validateEnvironment() {
 
   const url = requiredVars.NEXT_PUBLIC_SUPABASE_URL!;
   if (!url.startsWith('https://') || !url.includes('supabase.co')) {
+    // eslint-disable-next-line no-console
     console.warn(
       `⚠️ NEXT_PUBLIC_SUPABASE_URL parece inválida. Formato esperado: https://your-project.supabase.co`
     );
@@ -65,7 +67,9 @@ const hasSupabaseConfig = validateEnvironment();
 // that will reject at runtime when used. This avoids throwing during module
 // import (which breaks Next.js build) while still surfacing clear errors
 // when an API actually tries to access Supabase without configuration.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let supabaseBackendLocal: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let supabaseFrontendLocal: any;
 
 if (hasSupabaseConfig) {
@@ -127,11 +131,13 @@ if (
   const missingQueryBuilderFront = {
     select: () => missingQueryBuilderFront,
     then: () => Promise.reject(new Error(missingMsgFront)),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
   supabaseFrontendLocal = {
     from: () => missingQueryBuilderFront,
     rpc: () => Promise.reject(new Error(missingMsgFront)),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 }
 

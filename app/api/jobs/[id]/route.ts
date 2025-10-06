@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supabase-backend';
+import {
+  supabaseBackend,
+  validateUserId,
+  executeSecureQuery,
+} from '@/lib/supabase-backend';
 
 // GET /api/jobs/[id] - Buscar vaga específica
 export async function GET(
@@ -10,7 +14,7 @@ export async function GET(
   try {
     const { userId } = await auth();
     const { id } = await params;
-    
+
     if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -27,17 +31,21 @@ export async function GET(
     );
 
     if (result.error) {
-      console.error('❌ [SUPABASE-BACKEND] Erro ao buscar vaga:', result.error.message);
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error.message },
+        { status: 500 }
+      );
     }
 
     if (!result.data) {
-      return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Vaga não encontrada' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(result.data);
-  } catch (error) {
-    console.error('❌ API GET /jobs/[id]: Erro:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -53,20 +61,19 @@ export async function PUT(
   try {
     const { userId } = await auth();
     const { id } = await params;
-    
+
     if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    
+
     // Remover campos que não devem ser atualizados
-    const { id: _, userId: __, createdAt, ...updateData } = body;
-    
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _, userId: __, createdAt: ___, ...updateData } = body;
+
     // Adicionar timestamp de atualização
     updateData.updatedAt = new Date().toISOString();
-
-    console.log('🔍 [SUPABASE-BACKEND] Atualizando vaga:', id);
 
     // Verificar se a vaga existe e pertence ao usuário
     const existingResult = await executeSecureQuery(
@@ -81,7 +88,10 @@ export async function PUT(
     );
 
     if (!existingResult.data) {
-      return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Vaga não encontrada' },
+        { status: 404 }
+      );
     }
 
     // Atualizar vaga
@@ -98,13 +108,14 @@ export async function PUT(
     );
 
     if (result.error) {
-      console.error('❌ [SUPABASE-BACKEND] Erro ao atualizar vaga:', result.error.message);
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(result.data);
-  } catch (error) {
-    console.error('❌ API PUT /jobs/[id]: Erro:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -120,12 +131,10 @@ export async function DELETE(
   try {
     const { userId } = await auth();
     const { id } = await params;
-    
+
     if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    console.log('🔍 [SUPABASE-BACKEND] Excluindo vaga:', id);
 
     // Verificar se a vaga existe e pertence ao usuário antes de excluir
     const existingResult = await executeSecureQuery(
@@ -140,32 +149,31 @@ export async function DELETE(
     );
 
     if (!existingResult.data) {
-      return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Vaga não encontrada' },
+        { status: 404 }
+      );
     }
 
     // Excluir vaga
     const result = await executeSecureQuery(
-      supabaseBackend
-        .from('jobs')
-        .delete()
-        .eq('id', id)
-        .eq('userId', userId),
+      supabaseBackend.from('jobs').delete().eq('id', id).eq('userId', userId),
       `DELETE /jobs/${id} - Delete job`,
       userId
     );
 
     if (result.error) {
-      console.error('❌ [SUPABASE-BACKEND] Erro ao excluir vaga:', result.error.message);
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error.message },
+        { status: 500 }
+      );
     }
 
-    console.log(`✅ [SUPABASE-BACKEND] Vaga "${(existingResult.data as any)?.title || 'N/A'}" excluída com sucesso`);
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      message: 'Vaga excluída com sucesso' 
+      message: 'Vaga excluída com sucesso',
     });
-  } catch (error) {
-    console.error('❌ API DELETE /jobs/[id]: Erro:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,6 +1,5 @@
 # 📋 Controle de Vagas
 
-
 Sistema completo para gerenciamento de candidaturas de emprego, desenvolvido com as mais modernas tecnologias web.
 
 Sistema completo de gerenciamento de vagas de emprego desenvolvido com **Next.js 15**, **TypeScript**, **Tailwind CSS** e **Clerk** para autenticação.
@@ -117,29 +116,29 @@ Uma aplicação full-stack profissional que permite organizar, acompanhar e gere
 
 - 🔴 **Rejeitado** - Rejeitado (remove automaticamente)controle-vagas/
 
-- 🟢 **Aceito** - Vaga conquistada! 🎉├── app/                          # App Router (Next.js 15)
+- 🟢 **Aceito** - Vaga conquistada! 🎉├── app/ # App Router (Next.js 15)
 
-│   ├── dashboard/               # Área autenticada
+│ ├── dashboard/ # Área autenticada
 
-## ⚙️ **Configuração e Instalação**│   │   ├── add-job/            # Página para adicionar vagas
+## ⚙️ **Configuração e Instalação**│ │ ├── add-job/ # Página para adicionar vagas
 
-│   │   ├── jobs/               # Listagem de vagas
+│ │ ├── jobs/ # Listagem de vagas
 
-### **1. Pré-requisitos**│   │   ├── stats/              # Estatísticas
+### **1. Pré-requisitos**│ │ ├── stats/ # Estatísticas
 
-- Node.js 18+ │   │   └── layout.tsx          # Layout do dashboard
+- Node.js 18+ │ │ └── layout.tsx # Layout do dashboard
 
-- npm ou yarn│   ├── globals.css             # Estilos globais e variáveis CSS
+- npm ou yarn│ ├── globals.css # Estilos globais e variáveis CSS
 
-- Conta no [Supabase](https://supabase.com)│   ├── layout.tsx              # Layout raiz com providers
+- Conta no [Supabase](https://supabase.com)│ ├── layout.tsx # Layout raiz com providers
 
-- Conta no [Clerk](https://clerk.com)│   ├── page.tsx                # Página inicial (landing)
+- Conta no [Clerk](https://clerk.com)│ ├── page.tsx # Página inicial (landing)
 
-│   └── provider.tsx            # Providers (Theme, Query)
+│ └── provider.tsx # Providers (Theme, Query)
 
-### **2. Clonar o Repositório**├── components/                  # Componentes reutilizáveis
+### **2. Clonar o Repositório**├── components/ # Componentes reutilizáveis
 
-```bash│   ├── ui/                     # Componentes base (Radix + Tailwind)
+````bash│ ├── ui/                     # Componentes base (Radix + Tailwind)
 
 git clone https://github.com/WedsonTavares/controle-vagas.git│   ├── LinksDropdown.tsx       # Menu dropdown mobile
 
@@ -174,14 +173,16 @@ cp .env.example .env```
 ```bash
 git clone https://github.com/WedsonTavares/controle-vagas.git
 cd controle-vagas
-```
+````
 
 ### **2. Instalar Dependências**
+
 ```bash
 npm install
 ```
 
 ### **3. Configurar Variáveis de Ambiente**
+
 ```bash
 # Copiar arquivo de exemplo
 cp .env.example .env.local
@@ -190,6 +191,7 @@ cp .env.example .env.local
 ```
 
 **Configurar `.env.local`:**
+
 ```env
 # Clerk Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
@@ -204,6 +206,7 @@ DATABASE_URL="postgresql://postgres:password@host:5432/database"
 ```
 
 ### **4. Configurar Banco de Dados**
+
 ```bash
 # Sincronizar schema com o banco
 npm run db:push
@@ -213,6 +216,7 @@ npm run db:generate
 ```
 
 ### **5. Executar em Desenvolvimento**
+
 ```bash
 npm run dev
 ```
@@ -227,24 +231,22 @@ NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
 npm run devDATABASE_URL="your-database-url"
 
-``````
-
-
+```
 
 Acesse: [http://localhost:3000](http://localhost:3000)### 2. Clerk Setup
-
-
 
 ## 🚀 **Deploy no Vercel**1. Crie uma conta em [clerk.com](https://clerk.com)
 
 ## 🚀 **Deploy no Vercel**
 
 ### **Deploy Automático:**
+
 1. Conecte seu repositório ao Vercel
 2. Configure as variáveis de ambiente no dashboard
 3. Deploy automático a cada push
 
 ### **Variáveis de Ambiente (Vercel):**
+
 ```env
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
 CLERK_SECRET_KEY=sk_live_...
@@ -258,12 +260,14 @@ DATABASE_URL=postgresql://postgres:password@host:5432/database
 ## 🎯 **Uso do Sistema**
 
 ### **Páginas Principais**
+
 - **`/`** - Landing page com apresentação do sistema
 - **`/dashboard/add-job`** - Formulário para adicionar vagas
 - **`/dashboard/jobs`** - Listagem de todas as vagas
 - **`/dashboard/stats`** - Dashboard com estatísticas
 
 ### **Fluxo de Navegação**
+
 1. **Usuário não autenticado**: Acessa landing page
 2. **Clica em "Comece Agora"**: Redirecionado para login (Clerk)
 
@@ -273,7 +277,7 @@ DATABASE_URL=postgresql://postgres:password@host:5432/database
 
 5. **Mobile**: Navegação via dropdown na navbar
 
-```bash
+````bash
 
 npm run dev          # Executar em desenvolvimento## 🧩 Componentes
 
@@ -319,7 +323,7 @@ npm run db:studio    # Interface visual do banco// Sidebar fixa para telas grand
 
 - Cores dinâmicas baseadas no status// Classes: block lg:hidden
 
-```
+````
 
 ### **📱 Mobile First**
 
@@ -343,7 +347,7 @@ npm run db:studio    # Interface visual do banco// Sidebar fixa para telas grand
 
 - Estados de loading e erro#### `ThemeToggle`
 
-```tsx
+````tsx
 
 ## 🛡️ **Segurança**// Botão para alternar tema (light/dark/system)
 
@@ -392,7 +396,7 @@ npm run db:studio    # Interface visual do banco// Sidebar fixa para telas grand
 
 - LinkedIn: [Wedson Tavares](https://linkedin.com/in/wedson-tavares)- **`/dashboard/add-job`** - Adicionar nova vaga
 
-- **`/dashboard/jobs`** - Listar vagas existentes  
+- **`/dashboard/jobs`** - Listar vagas existentes
 
 ## 🎉 **Agradecimentos**- **`/dashboard/stats`** - Visualizar estatísticas
 
@@ -408,13 +412,14 @@ npm run db:studio    # Interface visual do banco// Sidebar fixa para telas grand
 
 - [Prisma](https://prisma.io) pelo ORM type-safe// Configurado em middleware.ts
 
-```
+````
 
 ---
 
 ## 🎨 Estilo e Tema
 
 ⭐ **Se este projeto te ajudou, considere dar uma estrela no repositório!**
+
 ### Sistema de Cores
 
 ```css
@@ -448,14 +453,14 @@ xl: 1280px  /* Extra large devices */
 
 ```tsx
 // Desktop first para sidebar
-"hidden lg:block"
+'hidden lg:block';
 
 // Mobile first para navbar
-"block lg:hidden"
+'block lg:hidden';
 
 // Cores com variáveis CSS
-"bg-[color:var(--color-sidebar)]"
-"text-[color:var(--color-sidebar-foreground)]"
+'bg-[color:var(--color-sidebar)]';
+'text-[color:var(--color-sidebar-foreground)]';
 ```
 
 ## 📝 Licença

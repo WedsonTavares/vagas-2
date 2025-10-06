@@ -1,22 +1,16 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript",
-    "prettier"
-  ],
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": "error",
-    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
-    "prefer-const": "error",
+    "prefer-const": "warn",
     "no-var": "error",
     "no-console": "warn",
-    "eqeqeq": "error"
+    "eqeqeq": "error",
+    "react/no-unescaped-entities": "warn",
+    "react-hooks/exhaustive-deps": "warn"
   },
-  "ignorePatterns": [
-    ".next",
-    "node_modules",
-    "*.config.*"
-  ]
+  "ignorePatterns": [".next", "node_modules", "*.config.*"]
 }

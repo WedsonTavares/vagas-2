@@ -1,7 +1,7 @@
-import React from 'react'
-import LinksDropdown from './LinksDropdown'
-import ThemeToggle from './ThemeToggle'
-import { UserButton } from '@clerk/nextjs'
+import React from 'react';
+import LinksDropdown from './LinksDropdown';
+import ThemeToggle from './ThemeToggle';
+import { UserButton } from '@clerk/nextjs';
 
 interface NavBarProps {
   className?: string;
@@ -9,7 +9,9 @@ interface NavBarProps {
 
 const NavBar = ({ className }: NavBarProps) => {
   return (
-    <nav className={`px-4 py-4 sm:px-16 lg:px-24 flex items-center justify-between bg-[color:var(--color-sidebar)] text-[color:var(--color-sidebar-foreground)] ${className || ''}`}>
+    <nav
+      className={`px-4 py-4 sm:px-16 lg:px-24 flex items-center justify-between bg-[color:var(--color-sidebar)] text-[color:var(--color-sidebar-foreground)] ${className || ''}`}
+    >
       <div>
         <LinksDropdown />
       </div>
@@ -18,7 +20,7 @@ const NavBar = ({ className }: NavBarProps) => {
         <UserButton />
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;

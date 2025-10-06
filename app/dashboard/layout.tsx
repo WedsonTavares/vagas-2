@@ -1,11 +1,11 @@
-import React from 'react'
-import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import NavBar from '@/components/NavBar'
-import NavBarMobile from '@/components/NavBarMobile'
-import Sidebar from '@/components/Sidebar'
-import { ToastProvider } from '@/components/ui/toast'
-import { ConfirmationProvider } from '@/components/ui/confirmation'
+import React from 'react';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import NavBar from '@/components/NavBar';
+import NavBarMobile from '@/components/NavBarMobile';
+import Sidebar from '@/components/Sidebar';
+import { ToastProvider } from '@/components/ui/toast';
+import { ConfirmationProvider } from '@/components/ui/confirmation';
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const { userId } = await auth();
@@ -25,14 +25,12 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
           <div className='lg:col-span-4 flex flex-col'>
             <NavBarMobile className='block lg:hidden' />
             <NavBar className='hidden lg:flex' />
-            <div className='flex-1 py-8 px-4 sm:px-8 lg:px-12'>
-              {children}
-            </div>
+            <div className='flex-1 py-8 px-4 sm:px-8 lg:px-12'>{children}</div>
           </div>
         </main>
       </ConfirmationProvider>
     </ToastProvider>
-  )
-}
+  );
+};
 
-export default DashboardLayout
+export default DashboardLayout;

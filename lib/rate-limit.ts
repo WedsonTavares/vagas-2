@@ -1,12 +1,12 @@
 /**
  * Rate Limiting System
- * 
+ *
  * Sistema de controle de taxa de requisições para proteger APIs contra:
  * - Ataques de força bruta
  * - Spam de requisições
  * - Sobrecarga do servidor
  * - Abuso de recursos
- * 
+ *
  * Funcionalidades:
  * - Rate limiting por IP/usuário
  * - Diferentes limites por tipo de operação
@@ -49,26 +49,26 @@ interface RateLimitEntry {
 export const DEFAULT_LIMITS: Record<string, RateLimitConfig> = {
   // Operações de leitura (mais lenientes)
   GET: {
-    max: 100,          // 100 requisições
+    max: 100, // 100 requisições
     window: 60 * 1000, // por minuto
     message: 'Muitas consultas. Tente novamente em 1 minuto.',
   },
-  
+
   // Operações de escrita (mais restritivas)
   POST: {
-    max: 20,           // 20 criações
+    max: 20, // 20 criações
     window: 60 * 1000, // por minuto
     message: 'Muitas criações. Tente novamente em 1 minuto.',
   },
-  
+
   PUT: {
-    max: 30,           // 30 atualizações
+    max: 30, // 30 atualizações
     window: 60 * 1000, // por minuto
     message: 'Muitas atualizações. Tente novamente em 1 minuto.',
   },
-  
+
   DELETE: {
-    max: 10,           // 10 exclusões
+    max: 10, // 10 exclusões
     window: 60 * 1000, // por minuto
     message: 'Muitas exclusões. Tente novamente em 1 minuto.',
   },
@@ -78,14 +78,14 @@ export const DEFAULT_LIMITS: Record<string, RateLimitConfig> = {
 export const STRICT_LIMITS: Record<string, RateLimitConfig> = {
   // Login/Registro - prevenção de força bruta
   AUTH: {
-    max: 5,              // 5 tentativas
+    max: 5, // 5 tentativas
     window: 15 * 60 * 1000, // por 15 minutos
     message: 'Muitas tentativas de login. Tente novamente em 15 minutos.',
   },
-  
+
   // Operações administrativas
   ADMIN: {
-    max: 50,           // 50 operações
+    max: 50, // 50 operações
     window: 60 * 1000, // por minuto
     message: 'Limite de operações administrativas excedido.',
   },
@@ -98,7 +98,7 @@ export const STRICT_LIMITS: Record<string, RateLimitConfig> = {
 /**
  * Mapa para armazenar contadores de rate limiting
  * Estrutura: Map<chave, dados_do_limite>
- * 
+ *
  * Por que Map ao invés de objeto:
  * - Performance superior para inserção/remoção frequente
  * - Chaves não ficam no prototype
@@ -116,16 +116,18 @@ const CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutos
 setInterval(() => {
   const now = Date.now();
   let cleanedCount = 0;
-  
+
   for (const [key, entry] of rateLimitStore.entries()) {
     if (entry.expiresAt <= now) {
       rateLimitStore.delete(key);
       cleanedCount++;
     }
   }
-  
+
   if (cleanedCount > 0) {
-    console.log(`🧹 Rate Limit: Limpou ${cleanedCount} entradas expiradas. Total restante: ${rateLimitStore.size}`);
+    console.log(
+      `🧹 Rate Limit: Limpou ${cleanedCount} entradas expiradas. Total restante: ${rateLimitStore.size}`
+    );
   }
 }, CLEANUP_INTERVAL);
 
@@ -135,7 +137,7 @@ setInterval(() => {
 
 /**
  * Gera chave única para identificar requisições
- * 
+ *
  * @param req - Objeto de requisição do Next.js
  * @param config - Configuração do rate limiting
  * @returns String única para identificar o cliente
@@ -144,19 +146,19 @@ function generateKey(req: NextRequest, config: RateLimitConfig): string {
   if (config.keyGenerator) {
     return config.keyGenerator(req);
   }
-  
+
   // Tentar obter IP real considerando proxies
   const ip = getClientIP(req);
   const method = req.method;
   const pathname = req.nextUrl.pathname;
-  
+
   // Chave composta: IP + método + caminho
   return `${ip}:${method}:${pathname}`;
 }
 
 /**
  * Extrai IP real do cliente considerando proxies e CDNs
- * 
+ *
  * @param req - Objeto de requisição
  * @returns IP do cliente
  */
@@ -165,27 +167,27 @@ function getClientIP(req: NextRequest): string {
   const forwardedFor = req.headers.get('x-forwarded-for');
   const realIP = req.headers.get('x-real-ip');
   const vercelIP = req.headers.get('x-vercel-forwarded-for');
-  
+
   if (forwardedFor) {
     // X-Forwarded-For pode ter múltiplos IPs, pegar o primeiro
     return forwardedFor.split(',')[0].trim();
   }
-  
+
   if (realIP) {
     return realIP;
   }
-  
+
   if (vercelIP) {
     return vercelIP;
   }
-  
+
   // Fallback para development
   return '127.0.0.1';
 }
 
 /**
  * Calcula tempo restante até reset da janela
- * 
+ *
  * @param expiresAt - Timestamp de expiração
  * @returns Segundos até o reset
  */
@@ -199,7 +201,7 @@ function getTimeUntilReset(expiresAt: number): number {
 
 /**
  * Verifica se uma requisição deve ser limitada
- * 
+ *
  * @param req - Requisição do Next.js
  * @param config - Configuração do rate limiting
  * @returns Objeto com resultado da verificação
@@ -215,10 +217,10 @@ export function checkRateLimit(
 } {
   const key = generateKey(req, config);
   const now = Date.now();
-  
+
   // Buscar entrada existente
   let entry = rateLimitStore.get(key);
-  
+
   // Se não existe ou expirou, criar nova entrada
   if (!entry || entry.expiresAt <= now) {
     entry = {
@@ -227,7 +229,7 @@ export function checkRateLimit(
       firstRequest: now,
     };
     rateLimitStore.set(key, entry);
-    
+
     return {
       allowed: true,
       remaining: config.max - 1,
@@ -235,14 +237,14 @@ export function checkRateLimit(
       totalHits: 1,
     };
   }
-  
+
   // Incrementar contador
   entry.count++;
-  
+
   // Verificar se excedeu limite
   const allowed = entry.count <= config.max;
   const remaining = Math.max(0, config.max - entry.count);
-  
+
   return {
     allowed,
     remaining,
@@ -253,7 +255,7 @@ export function checkRateLimit(
 
 /**
  * Middleware de rate limiting para APIs
- * 
+ *
  * @param req - Requisição do Next.js
  * @param config - Configuração do rate limiting
  * @returns NextResponse se limitado, null se permitido
@@ -263,7 +265,7 @@ export function rateLimitMiddleware(
   config: RateLimitConfig
 ): NextResponse | null {
   const result = checkRateLimit(req, config);
-  
+
   // Sempre adicionar headers informativos
   const headers = new Headers({
     'X-RateLimit-Limit': config.max.toString(),
@@ -271,14 +273,15 @@ export function rateLimitMiddleware(
     'X-RateLimit-Reset': Math.ceil(result.resetTime / 1000).toString(),
     'X-RateLimit-Window': (config.window / 1000).toString(),
   });
-  
+
   if (!result.allowed) {
     // Adicionar headers específicos quando limitado
     headers.set('Retry-After', getTimeUntilReset(result.resetTime).toString());
-    
+
     const errorResponse = {
       error: 'Rate limit exceeded',
-      message: config.message || 'Muitas requisições. Tente novamente mais tarde.',
+      message:
+        config.message || 'Muitas requisições. Tente novamente mais tarde.',
       details: {
         limit: config.max,
         remaining: 0,
@@ -286,13 +289,13 @@ export function rateLimitMiddleware(
         retryAfter: getTimeUntilReset(result.resetTime),
       },
     };
-    
+
     return NextResponse.json(errorResponse, {
       status: 429, // Too Many Requests
       headers,
     });
   }
-  
+
   return null; // Permitido - não retorna response
 }
 
@@ -302,11 +305,13 @@ export function rateLimitMiddleware(
 
 /**
  * Cria configuração personalizada de rate limiting
- * 
+ *
  * @param options - Opções de configuração
  * @returns Configuração completa
  */
-export function createRateLimitConfig(options: Partial<RateLimitConfig>): RateLimitConfig {
+export function createRateLimitConfig(
+  options: Partial<RateLimitConfig>
+): RateLimitConfig {
   return {
     max: 60,
     window: 60 * 1000,
@@ -317,7 +322,7 @@ export function createRateLimitConfig(options: Partial<RateLimitConfig>): RateLi
 
 /**
  * Obtém configuração baseada no método HTTP
- * 
+ *
  * @param method - Método HTTP (GET, POST, etc.)
  * @returns Configuração apropriada
  */
@@ -327,7 +332,7 @@ export function getConfigByMethod(method: string): RateLimitConfig {
 
 /**
  * Obtém estatísticas atuais do rate limiting
- * 
+ *
  * @returns Estatísticas de uso
  */
 export function getRateLimitStats(): {
@@ -338,7 +343,7 @@ export function getRateLimitStats(): {
 } {
   let oldestEntry: number | null = null;
   let newestEntry: number | null = null;
-  
+
   for (const entry of rateLimitStore.values()) {
     if (oldestEntry === null || entry.firstRequest < oldestEntry) {
       oldestEntry = entry.firstRequest;
@@ -347,10 +352,10 @@ export function getRateLimitStats(): {
       newestEntry = entry.firstRequest;
     }
   }
-  
+
   // Estimar uso de memória (aproximado)
   const estimatedMemory = rateLimitStore.size * 100; // ~100 bytes por entrada
-  
+
   return {
     totalEntries: rateLimitStore.size,
     memoryUsage: `~${(estimatedMemory / 1024).toFixed(2)} KB`,

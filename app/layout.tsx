@@ -1,16 +1,14 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
-import Providers from "./provider";
+import type { Metadata } from 'next';
+import './globals.css';
+import { ClerkProvider } from '@clerk/nextjs';
+import { Inter } from 'next/font/google';
+import Providers from './provider';
 
-const inter = Inter({ subsets: ["latin"] });
-
-
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Controle de Vagas",
-  description: "Gerenciado por Controle de Vagas",
+  title: 'Controle de Vagas',
+  description: 'Gerenciado por Controle de Vagas',
   icons: {
     icon: '/favicon.png',
     shortcut: '/favicon.png',
@@ -25,11 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="pt-br" suppressHydrationWarning>
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
+      <html lang='pt-br' suppressHydrationWarning>
+        <body className={inter.className}>
+          <Providers>{children}</Providers>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supabase-backend';
+import {
+  supabaseBackend,
+  validateUserId,
+  executeSecureQuery,
+} from '@/lib/supabase-backend';
 import { JobType, JobMode, JobStatus } from '@/types';
 
 // GET /api/jobs - Listar todas as vagas do usuário
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,10 +22,7 @@ export async function GET(request: NextRequest) {
     const mode = searchParams.get('mode') as JobMode | null;
 
     // Construir query segura com Service Role Key
-    let query = supabaseBackend
-      .from('jobs')
-      .select('*')
-      .eq('userId', userId); // Validação obrigatória de userId
+    let query = supabaseBackend.from('jobs').select('*').eq('userId', userId); // Validação obrigatória de userId
 
     // Aplicar filtros se fornecidos
     if (status) query = query.eq('status', status);
@@ -36,13 +37,14 @@ export async function GET(request: NextRequest) {
     );
 
     if (result.error) {
-      console.error('❌ [SUPABASE-BACKEND] Erro ao buscar vagas:', result.error.message);
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(result.data || []);
-  } catch (error) {
-    console.error('❌ API GET /jobs: Erro:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -54,13 +56,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    
+
     const {
       title,
       company,
@@ -126,28 +128,25 @@ export async function POST(request: NextRequest) {
       notes,
       appliedAt: appliedAt ? new Date(appliedAt).toISOString() : null,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     // Inserir no Supabase usando Service Role Key
     const result = await executeSecureQuery(
-      supabaseBackend
-        .from('jobs')
-        .insert([jobData])
-        .select()
-        .single(),
+      supabaseBackend.from('jobs').insert([jobData]).select().single(),
       'POST /jobs - Create new job',
       userId
     );
 
     if (result.error) {
-      console.error('❌ [SUPABASE-BACKEND] Erro ao criar vaga:', result.error.message);
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(result.data, { status: 201 });
-  } catch (error) {
-    console.error('❌ API POST /jobs: Erro ao criar vaga:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

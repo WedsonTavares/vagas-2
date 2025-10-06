@@ -1,86 +1,123 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supabase-backend';
+import {
+  supabaseBackend,
+  validateUserId,
+  executeSecureQuery,
+} from '@/lib/supabase-backend';
 
-// GET /api/jobs/stats - Estatísticas das vagas do usuário
-export async function GET(request: NextRequest) {
+// GET /api/jobs/stats - Buscar estatísticas das vagas
+export async function GET() {
   try {
     const { userId } = await auth();
-    
+
     if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Buscar todas as vagas do usuário usando Service Role Key
+    // Buscar todas as vagas do usuário para calcular estatísticas
     const result = await executeSecureQuery(
       supabaseBackend
         .from('jobs')
         .select('id, title, company, status, type, mode, createdAt')
         .eq('userId', userId),
-      'GET /jobs/stats - Get user job statistics',
+      'GET /jobs/stats - Get user jobs for statistics',
       userId
     );
 
     if (result.error) {
-      console.error('❌ [SUPABASE-BACKEND] Erro ao buscar vagas para stats:', result.error.message);
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error.message },
+        { status: 500 }
+      );
     }
 
-    const jobs = (result.data || []) as any[];
+    interface Job {
+      id: string;
+      title: string;
+      company: string;
+      status: string;
+      type: string;
+      mode: string;
+      createdAt: string;
+    }
 
-    // Calcular estatísticas manualmente
-    const totalJobs = jobs.length;
+    const jobs = (result.data || []) as Job[];
 
-    // Contar por status
-    const statusCounts = jobs.reduce((acc, job) => {
-      acc[job.status] = (acc[job.status] || 0) + 1;
+    // Calcular estatísticas
+    // Normalizamos possíveis valores de status vindos do banco (lowercase, underscores, hyphens)
+    const STATUS_MAP: Record<string, string> = {
+      pending: 'APPLIED',
+      applied: 'APPLIED',
+      test_pending: 'TEST_PENDING',
+      'test-pending': 'TEST_PENDING',
+      testpending: 'TEST_PENDING',
+      test_completed: 'TEST_COMPLETED',
+      'test-completed': 'TEST_COMPLETED',
+      testcompleted: 'TEST_COMPLETED',
+      interview: 'INTERVIEW',
+      accepted: 'ACCEPTED',
+      rejected: 'REJECTED',
+    };
+
+    const normalizeStatus = (raw?: string) => {
+      if (!raw) return 'APPLIED';
+      const key = String(raw).toLowerCase();
+      return STATUS_MAP[key] ?? String(raw).toUpperCase();
+    };
+
+    const byStatus = jobs.reduce((acc: Record<string, number>, job) => {
+      const s = normalizeStatus(job.status);
+      acc[s] = (acc[s] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
-    // Contar por tipo
-    const typeCounts = jobs.reduce((acc, job) => {
-      acc[job.type] = (acc[job.type] || 0) + 1;
+    const byType = jobs.reduce((acc: Record<string, number>, job) => {
+      const t = job.type || 'UNKNOWN';
+      acc[t] = (acc[t] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
-    // Contar por modo
-    const modeCounts = jobs.reduce((acc, job) => {
-      acc[job.mode] = (acc[job.mode] || 0) + 1;
+    const byMode = jobs.reduce((acc: Record<string, number>, job) => {
+      const m = job.mode || 'UNKNOWN';
+      acc[m] = (acc[m] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
-    // Calcular aplicações recentes (últimos 30 dias)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    const recentApplications = jobs.filter(job => 
-      new Date(job.createdAt) >= thirtyDaysAgo
-    ).length;
+    const recentApplicationsCount = jobs.filter(job => {
+      const jobDate = new Date(job.createdAt);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return jobDate >= weekAgo;
+    }).length;
 
-    // Pegar jobs recentes para a lista (últimos 5)
     const recentJobs = jobs
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
       .slice(0, 5)
       .map(job => ({
         id: job.id,
         title: job.title,
         company: job.company,
-        status: job.status,
-        createdAt: job.createdAt
+        status: normalizeStatus(job.status),
+        createdAt: job.createdAt,
       }));
 
     const stats = {
-      total: totalJobs,
-      byStatus: statusCounts,       // Retorna como objeto { "PENDING": 3, "APPLIED": 2 }
-      byType: typeCounts,           // Retorna como objeto { "FULL_TIME": 4, "PART_TIME": 1 }
-      byMode: modeCounts,           // Retorna como objeto { "REMOTE": 3, "HYBRID": 2 }
-      recentApplications,           // Número de aplicações nos últimos 30 dias
-      recentJobs                    // Array dos 5 jobs mais recentes
+      total: jobs.length,
+      byStatus,
+      byType,
+      byMode,
+      recentApplications: recentApplicationsCount,
+      recentJobs,
     };
 
-    return NextResponse.json(stats);
+    return NextResponse.json(stats, { status: 200 });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error('❌ API GET /jobs/stats: Erro:', error);
+    // Optionally log the error using a logging service here
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

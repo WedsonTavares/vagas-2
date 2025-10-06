@@ -3,6 +3,7 @@
 ## 📋 Fluxo de Desenvolvimento
 
 ### 1. Setup Inicial
+
 ```bash
 # Clone do repositório
 git clone [repo-url]
@@ -17,6 +18,7 @@ cp .env.example .env.local
 ```
 
 ### 2. Desenvolvimento Local
+
 ```bash
 # Iniciar ambiente de desenvolvimento
 npm run dev
@@ -30,11 +32,13 @@ npm run format
 ### 3. Workflow de Features
 
 #### Branch develop
+
 - **Finalidade**: Branch principal de desenvolvimento
 - **Uso**: Todas as features são desenvolvidas aqui
 - **Deploy**: Vercel Preview (automático)
 
-#### Branch main  
+#### Branch main
+
 - **Finalidade**: Código de produção
 - **Uso**: Apenas merges da develop via PR
 - **Deploy**: Produção (automático)
@@ -81,35 +85,38 @@ gh pr create --base main --head develop --title "Deploy: [descrição]"
 
 ## 🛠️ Scripts Disponíveis
 
-| Script | Descrição |
-|--------|-----------|
-| `npm run dev` | Inicia servidor de desenvolvimento |
-| `npm run build` | Build de produção |
-| `npm run start` | Inicia servidor de produção |
-| `npm run lint` | Executa ESLint |
-| `npm run lint:fix` | Corrige problemas de lint automaticamente |
-| `npm run type-check` | Verifica tipos TypeScript |
-| `npm run format` | Formata código com Prettier |
-| `npm run format:check` | Verifica formatação sem alterar |
-| `npm run pre-deploy` | Validação completa pré-deploy |
+| Script                 | Descrição                                 |
+| ---------------------- | ----------------------------------------- |
+| `npm run dev`          | Inicia servidor de desenvolvimento        |
+| `npm run build`        | Build de produção                         |
+| `npm run start`        | Inicia servidor de produção               |
+| `npm run lint`         | Executa ESLint                            |
+| `npm run lint:fix`     | Corrige problemas de lint automaticamente |
+| `npm run type-check`   | Verifica tipos TypeScript                 |
+| `npm run format`       | Formata código com Prettier               |
+| `npm run format:check` | Verifica formatação sem alterar           |
+| `npm run pre-deploy`   | Validação completa pré-deploy             |
 
 ## 🔄 CI/CD Pipeline
 
 ### Triggers Automáticos
 
 #### Push para develop:
+
 - ✅ Tests
-- ✅ Lint & Type Check  
+- ✅ Lint & Type Check
 - ✅ Security Audit
 - 🚀 Deploy Preview (Vercel)
 
 #### Push para main:
+
 - ✅ Tests
 - ✅ Lint & Type Check
 - ✅ Security Audit
 - 🚀 Deploy Production (Vercel)
 
 #### Pull Requests:
+
 - ✅ Tests
 - ✅ Lint & Type Check
 - ✅ Security Audit
@@ -141,18 +148,21 @@ gh pr create --base main --head develop --title "Deploy: [descrição]"
 ## 🔧 Configuração de Qualidade
 
 ### ESLint (.eslintrc.json)
+
 - Next.js rules
-- TypeScript rules  
+- TypeScript rules
 - Prettier integration
 - Custom rules para melhor DX
 
 ### Prettier (.prettierrc.json)
+
 - 2 spaces indentation
 - Single quotes
 - Semicolons
 - Trailing commas
 
 ### TypeScript (tsconfig.json)
+
 - Strict mode enabled
 - Path mapping configured
 - Latest ES features
@@ -160,6 +170,7 @@ gh pr create --base main --head develop --title "Deploy: [descrição]"
 ## 🌍 Variáveis de Ambiente
 
 ### Desenvolvimento (.env.local)
+
 ```bash
 # Clerk Authentication (Development)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
@@ -178,13 +189,15 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
 ```
 
 ### Produção (Vercel/Netlify)
-- Use chaves de **produção** do Clerk (pk_live_, sk_live_)
+
+- Use chaves de **produção** do Clerk (pk*live*, sk*live*)
 - Configure todas as variáveis no painel do provedor
 - Verifique PRODUCTION-SETUP.md para lista completa
 
 ## 🚨 Troubleshooting
 
 ### Erro de Build
+
 ```bash
 # Limpar cache e rebuildar
 rm -rf .next node_modules
@@ -193,6 +206,7 @@ npm run build
 ```
 
 ### Erro de Lint
+
 ```bash
 # Corrigir automaticamente
 npm run lint:fix
@@ -201,6 +215,7 @@ npm run lint:fix
 ```
 
 ### Erro de Tipos
+
 ```bash
 # Verificar tipos específicos
 npx tsc --noEmit --incremental false
@@ -209,6 +224,7 @@ npx tsc --noEmit --incremental false
 ```
 
 ### Deploy Falhou
+
 ```bash
 # Executar validação local
 npm run pre-deploy
@@ -219,17 +235,20 @@ npm run pre-deploy
 ## 📊 Monitoramento
 
 ### GitHub Actions
+
 - Acesse "Actions" tab no GitHub
 - Monitore builds e deploys
 - Logs detalhados disponíveis
 
 ### Vercel Dashboard
+
 - Preview deployments
-- Production deployments  
+- Production deployments
 - Performance metrics
 - Error tracking
 
 ### Supabase Dashboard
+
 - Database health
 - API usage
 - Query performance
@@ -238,21 +257,25 @@ npm run pre-deploy
 ## 🎯 Best Practices
 
 ### Commits
+
 - Use conventional commits: `feat:`, `fix:`, `docs:`, `refactor:`
 - Mantenha commits pequenos e focados
 - Escreva mensagens claras e descritivas
 
 ### Code Quality
+
 - Execute `npm run pre-deploy` antes de qualquer merge
 - Nunca faça push direto para main
 - Use develop como branch principal de trabalho
 
 ### Security
+
 - Nunca commite .env.local
 - Use Service Role Key apenas no backend
 - Mantenha dependências atualizadas
 
 ### Performance
+
 - Monitore bundle size após mudanças
 - Use React.memo quando necessário
 - Otimize queries do Supabase

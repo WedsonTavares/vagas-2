@@ -82,7 +82,7 @@ npm run type-check
 ## 🔄 Workflow de Deploy
 
 1. **Desenvolvimento:** `develop` branch
-2. **Pull Request:** para `main` branch  
+2. **Pull Request:** para `main` branch
 3. **Review:** código passa por CI/CD
 4. **Merge:** deploy automático para produção
 5. **Monitor:** verificar funcionamento
@@ -90,15 +90,18 @@ npm run type-check
 ## 📞 Troubleshooting
 
 ### Erro: "Invalid Clerk Keys"
+
 - Verifique se está usando chaves de produção
 - Confirme domínio no Clerk Dashboard
 
 ### Erro: "Database connection failed"
+
 - Verifique Service Role Key
 - Confirme URL do Supabase
 - Teste conexão local primeiro
 
 ### Erro: "RLS Policy"
+
 - Confirme que RLS está ativo
 - Verifique policies no Supabase
 - Teste com dados de usuário real

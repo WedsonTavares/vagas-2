@@ -66,7 +66,7 @@ export interface Job {
 
 /**
  * RecentJob: Tipo simplificado para vagas recentes
- * 
+ *
  * Por que um tipo separado:
  * - API retorna dados mínimos para performance
  * - Não precisa de todos os campos de Job
@@ -77,13 +77,13 @@ export interface RecentJob {
   id: string;
   title: string;
   company: string;
-  status: JobStatus;  // Enum tipado ao invés de string
-  createdAt: string;  // ISO string da API
+  status: JobStatus; // Enum tipado ao invés de string
+  createdAt: string; // ISO string da API
 }
 
 /**
  * JobStats: Interface principal para dados estatísticos
- * 
+ *
  * Estrutura:
  * - total: Número total de vagas
  * - byStatus: Contagem por status usando enum tipado
@@ -91,7 +91,7 @@ export interface RecentJob {
  * - byMode: Contagem por modalidade (remoto/híbrido/presencial)
  * - recentApplications: Número de candidaturas recentes
  * - recentJobs: Array de vagas recentes (limitado)
- * 
+ *
  * Vantagens da tipagem forte:
  * - IntelliSense melhorado
  * - Detecção de erros em compile time
@@ -99,16 +99,16 @@ export interface RecentJob {
  */
 export interface JobStats {
   total: number;
-  byStatus: Record<JobStatus, number>;  // Enum keys garantem consistência
+  byStatus: Record<JobStatus, number>; // Enum keys garantem consistência
   byType: Record<JobType, number>;
   byMode: Record<JobMode, number>;
   recentApplications: number;
-  recentJobs: RecentJob[];              // Array tipado
+  recentJobs: RecentJob[]; // Array tipado
 }
 
 /**
  * ChartDataItem: Tipo para itens do gráfico de pizza
- * 
+ *
  * Usado em: JobsChart component
  * Campos:
  * - name: Nome curto para legenda
@@ -118,9 +118,9 @@ export interface JobStats {
  * - status: Referência do enum para chaves únicas
  */
 export interface ChartDataItem {
-  name: string;      // Ex: "Candidatura"
-  fullName: string;  // Ex: "Candidatura Enviada"
-  value: number;     // Ex: 15
-  color: string;     // Ex: "#3b82f6"
+  name: string; // Ex: "Candidatura"
+  fullName: string; // Ex: "Candidatura Enviada"
+  value: number; // Ex: 15
+  color: string; // Ex: "#3b82f6"
   status: JobStatus; // Ex: JobStatus.APPLIED
 }

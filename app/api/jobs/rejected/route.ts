@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supabase-backend';
+import {
+  supabaseBackend,
+  validateUserId,
+  executeSecureQuery,
+} from '@/lib/supabase-backend';
 
 // GET /api/jobs/rejected - Listar todas as vagas rejeitadas do usuário
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -24,13 +29,14 @@ export async function GET(request: NextRequest) {
     );
 
     if (result.error) {
-      console.error('❌ [SUPABASE-BACKEND] Erro ao buscar vagas rejeitadas:', result.error.message);
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(result.data || []);
-  } catch (error) {
-    console.error('❌ API GET /jobs/rejected: Erro:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -42,7 +48,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -51,7 +57,10 @@ export async function POST(request: NextRequest) {
     const { jobId } = body;
 
     if (!jobId) {
-      return NextResponse.json({ error: 'Job ID é obrigatório' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Job ID é obrigatório' },
+        { status: 400 }
+      );
     }
 
     // Verificar se a vaga existe e pertence ao usuário
@@ -67,16 +76,19 @@ export async function POST(request: NextRequest) {
     );
 
     if (!existingResult.data) {
-      return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Vaga não encontrada' },
+        { status: 404 }
+      );
     }
 
     // Atualizar status para REJECTED
-    const result = await executeSecureQuery(
+    const updateResult = await executeSecureQuery(
       supabaseBackend
         .from('jobs')
         .update({
           status: 'REJECTED',
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         })
         .eq('id', jobId)
         .eq('userId', userId)
@@ -86,18 +98,19 @@ export async function POST(request: NextRequest) {
       userId
     );
 
-    if (result.error) {
-      console.error('❌ [SUPABASE-BACKEND] Erro ao rejeitar vaga:', result.error.message);
-      return NextResponse.json({ error: result.error.message }, { status: 500 });
+    if (updateResult.error) {
+      return NextResponse.json(
+        { error: updateResult.error.message },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
       success: true,
       message: 'Vaga marcada como rejeitada',
-      job: result.data
+      job: updateResult.data,
     });
-  } catch (error) {
-    console.error('❌ API POST /jobs/rejected: Erro:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -8,7 +8,6 @@ const publicRoutes = createRouteMatcher([
   "/api(.*)",        // permitir APIs públicas
   "/_next(.*)",      // recursos estáticos do Next
   "/favicon.ico",    // favicon
-  "/dashboard(.*)",  // TEMPORÁRIO: permitir dashboard também
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

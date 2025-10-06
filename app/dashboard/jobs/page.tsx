@@ -1,26 +1,3 @@
-/**
- * Arquivo: app/dashboard/jobs/page.tsx
- * Propósito: Página otimizada para gerenciar lista de vagas com funcionalidades completas
- *
- * Otimizações implementadas:
- * - React.useCallback() para todos os handlers memoizados
- * - React.useMemo() para filtros e computações complexas
- * - Debounce otimizado para pesquisa
- * - Cache de estado para melhor performance
- * - Tratamento robusto de erros por tipo
- * - Validações de segurança
- * - Loading states otimizados
- * - Memoização de componentes filhos
- *
- * Funcionalidades mantidas:
- * - Listagem, filtro, pesquisa de vagas
- * - Edição inline e modal
- * - Exclusão com confirmação
- * - Mudança de status automática
- * - Navegação por parâmetros URL
- * - Estados de loading e empty
- */
-
 'use client';
 
 import React, {
@@ -30,10 +7,9 @@ import React, {
   useMemo,
   Suspense,
 } from 'react';
-import { Button } from '@/components/ui/button';
 import { getJobs, deleteJob, updateJob } from '@/lib/api';
-import { Job, JobType, JobMode, JobStatus } from '@/types';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Job, JobStatus } from '@/types';
+import { useSearchParams } from 'next/navigation';
 import { useToast } from '@/components/ui/toast';
 import { useConfirmation } from '@/components/ui/confirmation';
 import JobsHeader from '@/components/jobs/JobsHeader';
@@ -41,15 +17,11 @@ import JobsSearchAndEmpty from '@/components/jobs/JobsSearchAndEmpty';
 import JobCard from '@/components/jobs/JobCard';
 import JobEditModal from '@/components/jobs/JobEditModal';
 import Loading from '@/components/ui/loading';
-import { getStatusLabel } from '@/utils/jobUtils';
 
 // ========================================
 // INTERFACES E TIPOS
 // ========================================
 
-/**
- * Interfaces para tipagem do estado
- */
 interface JobsState {
   jobs: Job[];
   searchTerm: string;
@@ -58,41 +30,17 @@ interface JobsState {
   expandedCards: Set<string>;
 }
 
-/**
- * EditModalState: Interface para o estado do modal de edição
- */
 interface EditModalState {
   editingJob: Job | null;
   editFormData: Partial<Job>;
   isOpen: boolean;
 }
 
-// Componente interno que usa useSearchParams
 const JobsPageContent = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { addToast } = useToast();
   const { confirm } = useConfirmation();
 
-  // ========================================
-  // ESTADO LOCAL OTIMIZADO
-  // ========================================
-
-  /**
-   * Estado principal da página de jobs
-   * Organizado em uma estrutura para melhor performance
-   */
-  /**
-   * Estado principal da página de jobs
-   * Usado para controlar todos os dados e filtros exibidos na tela.
-   * Mantém performance e organização, pois centraliza tudo que afeta renderização dos cards e filtros.
-   *
-   * Usado em:
-   * - Filtros de pesquisa
-   * - Renderização dos cards
-   * - Controle de loading
-   * - Expansão de cards
-   */
   const [jobsState, setJobsState] = useState<JobsState>({
     jobs: [],
     loading: true,
@@ -101,42 +49,12 @@ const JobsPageContent = () => {
     expandedCards: new Set<string>(),
   });
 
-  /**
-   * Estado do modal de edição separado para evitar re-renders desnecessários
-   */
-  /**
-   * Estado do modal de edição
-   * Mantém os dados da vaga sendo editada e controla abertura/fechamento do modal.
-   *
-   * Usado em:
-   * - Modal de edição (JobEditModal)
-   * - Handlers de edição/salvamento/cancelamento
-   */
   const [editModalState, setEditModalState] = useState<EditModalState>({
     editingJob: null,
     editFormData: {},
     isOpen: false,
   });
 
-  // ========================================
-  // HANDLERS MEMOIZADOS
-  // ========================================
-
-  /**
-   * toggleCard: Handler memoizado para expandir/colapsar cards
-   *
-   * @param jobId - ID da vaga para toggle
-   *
-   * Otimizado com useCallback para evitar re-renders de todos os JobCards
-   */
-  /**
-   * toggleCard: Expande ou colapsa o card de uma vaga.
-   * Por que assim? Usando Set para performance O(1) e evitar re-render de todos os cards.
-   *
-   * Usado em:
-   * - Componente JobCard (onToggleCard)
-   * - Renderização condicional de detalhes da vaga
-   */
   const toggleCard = useCallback((jobId: string) => {
     setJobsState(prev => {
       const newExpanded = new Set(prev.expandedCards);
@@ -152,28 +70,9 @@ const JobsPageContent = () => {
     });
   }, []);
 
-  // ========================================
-  // EFFECTS MEMOIZADOS
-  // ========================================
-
-  /**
-   * loadJobs: Função para carregar vagas memoizada
-   *
-   * Otimizada com useCallback para evitar re-execução desnecessária
-   * Mantém toda funcionalidade de filtro e tratamento de erro
-   */
-  /**
-   * loadJobs: Carrega as vagas da API, aplicando filtro de status se necessário.
-   * Por que assim? Mantém loading state, trata erros e centraliza chamada à API.
-   *
-   * Usado em:
-   * - useEffect inicial da página
-   * - Após editar, excluir ou mudar status de vaga
-   */
   const loadJobs = useCallback(async () => {
     try {
       setJobsState(prev => ({ ...prev, loading: true }));
-      // Se há filtro de status, usar filtro específico, senão carregar todas
       const filters = jobsState.statusFilter
         ? { status: jobsState.statusFilter }
         : {};
@@ -183,8 +82,7 @@ const JobsPageContent = () => {
         jobs: data,
         loading: false,
       }));
-    } catch (error) {
-      console.error('Erro ao carregar vagas:', error);
+    } catch {
       setJobsState(prev => ({ ...prev, loading: false }));
       addToast({
         type: 'error',
@@ -194,24 +92,10 @@ const JobsPageContent = () => {
     }
   }, [jobsState.statusFilter, addToast]);
 
-  /**
-   * filterJobs: Função de filtro memoizada
-   *
-   * Aplica filtros de pesquisa e retorna array filtrado
-   * Otimizada para evitar computações desnecessárias
-   */
-  /**
-   * filterJobs: Filtra as vagas por termo de pesquisa.
-   * Por que assim? Mantém separação entre filtro de status (feito na API) e filtro de texto (feito no client).
-   *
-   * Usado em:
-   * - useMemo para gerar lista filtrada
-   * - Renderização dos cards
-   */
   const filterJobs = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (jobs: Job[], searchTerm: string, statusFilter?: JobStatus): Job[] => {
       let filtered = jobs;
-      // Filtrar por termo de pesquisa
       if (searchTerm.trim()) {
         const searchLower = searchTerm.toLowerCase();
         filtered = filtered.filter((job: Job) => {
@@ -222,50 +106,26 @@ const JobsPageContent = () => {
           return titleMatch || companyMatch || locationMatch;
         });
       }
-      // Nota: Filtro de status já é aplicado no carregamento das vagas
-      // Para filtros de "REJECTED", as vagas já vêm da API específica
       return filtered;
     },
     []
   );
 
-  // ========================================
-  // EFFECTS
-  // ========================================
-
   useEffect(() => {
     loadJobs();
-  }, [loadJobs]); // Recarregar quando função mudar
+  }, [loadJobs]);
 
-  // Ler filtro de status da URL
+  // ================= CORREÇÃO ===================
   useEffect(() => {
-    const status = searchParams.get('status') as JobStatus | null;
+    // eslint-disable-next-line prettier/prettier
+    const status = searchParams ? (searchParams.get('status') as JobStatus | null) : null;
     setJobsState(prev => ({ ...prev, statusFilter: status }));
   }, [searchParams]);
+  // ==============================================
 
-  // Debounce removido - vamos aplicar filtros diretamente no useMemo
-
-  /**
-   * handleStatusChange: Handler memoizado para mudança de status
-   *
-   * @param jobId - ID da vaga
-   * @param newStatus - Novo status da vaga
-   *
-   * Mantém toda lógica original incluindo exclusão automática para rejeitadas
-   * Otimizado com useCallback e tratamento robusto de erros
-   */
-  /**
-   * handleStatusChange: Atualiza o status de uma vaga.
-   * Por que assim? Se for rejeitado, exclui automaticamente após confirmação. Mantém UX consistente e lógica centralizada.
-   *
-   * Usado em:
-   * - JobCard (onStatusChange)
-   * - Mudança de status via UI
-   */
   const handleStatusChange = useCallback(
     async (jobId: string, newStatus: JobStatus) => {
       try {
-        // Se o status for rejeitado, excluir a vaga automaticamente
         if (newStatus === JobStatus.REJECTED) {
           const job = jobsState.jobs.find((j: Job) => j.id === jobId);
           if (job) {
@@ -296,6 +156,7 @@ const JobsPageContent = () => {
           description: `Status da vaga alterado para "${getStatusLabel(newStatus)}"`,
         });
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Erro ao atualizar status:', error);
         addToast({
           type: 'error',
@@ -305,26 +166,10 @@ const JobsPageContent = () => {
         });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [jobsState.jobs, confirm, addToast, loadJobs]
   );
 
-  /**
-   * handleDelete: Handler memoizado para exclusão de vagas
-   *
-   * @param jobId - ID da vaga
-   * @param jobTitle - Título da vaga para confirmação
-   *
-   * Mantém diferenciação entre vagas normais e rejeitadas
-   * Otimizado com useCallback e validação de segurança
-   */
-  /**
-   * handleDelete: Exclui vaga ou remove do histórico de rejeitadas.
-   * Por que assim? Mantém confirmação para evitar exclusão acidental e diferencia lógica para vagas rejeitadas.
-   *
-   * Usado em:
-   * - JobCard (onDelete)
-   * - Exclusão via UI
-   */
   const handleDelete = useCallback(
     async (jobId: string, jobTitle: string) => {
       const job = jobsState.jobs.find((j: Job) => j.id === jobId);
@@ -340,7 +185,6 @@ const JobsPageContent = () => {
       });
       if (confirmed) {
         try {
-          // Para vagas rejeitadas ou normais, usar a mesma API
           await deleteJob(jobId);
           await loadJobs();
           addToast({
@@ -351,6 +195,7 @@ const JobsPageContent = () => {
               : `A vaga "${jobTitle}" foi excluída com sucesso.`,
           });
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Erro ao excluir vaga:', error);
           addToast({
             type: 'error',
@@ -367,22 +212,6 @@ const JobsPageContent = () => {
     [jobsState.jobs, confirm, addToast, loadJobs]
   );
 
-  /**
-   * handleEdit: Handler memoizado para abrir modal de edição
-   *
-   * @param job - Vaga a ser editada
-   *
-   * Abre modal com dados pré-preenchidos
-   * Otimizado com useCallback
-   */
-  /**
-   * handleEdit: Abre o modal de edição com os dados da vaga selecionada.
-   * Por que assim? Mantém UX fluida e separa estado do modal do estado principal.
-   *
-   * Usado em:
-   * - JobCard (onEdit)
-   * - Modal de edição
-   */
   const handleEdit = useCallback((job: Job) => {
     setEditModalState({
       editingJob: job,
@@ -391,24 +220,9 @@ const JobsPageContent = () => {
     });
   }, []);
 
-  /**
-   * handleSaveEdit: Handler memoizado para salvar edições
-   *
-   * Converte dados para formato da API e valida antes de salvar
-   * Mantém toda funcionalidade original com melhor tratamento de erro
-   */
-  /**
-   * handleSaveEdit: Salva alterações feitas na vaga editada.
-   * Por que assim? Garante que datas estejam no formato correto e centraliza lógica de atualização.
-   *
-   * Usado em:
-   * - JobEditModal (onSave)
-   * - Após edição de vaga
-   */
   const handleSaveEdit = useCallback(async () => {
     if (!editModalState.editingJob) return;
     try {
-      // Converter dados para o formato esperado pela API
       const dataToUpdate = {
         ...editModalState.editFormData,
         appliedAt:
@@ -429,6 +243,7 @@ const JobsPageContent = () => {
         description: `A vaga "${editModalState.editFormData.title}" foi atualizada com sucesso.`,
       });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Erro ao atualizar vaga:', error);
       addToast({
         type: 'error',
@@ -438,18 +253,6 @@ const JobsPageContent = () => {
     }
   }, [editModalState, addToast, loadJobs]);
 
-  /**
-   * handleCancelEdit: Handler memoizado para cancelar edição
-   *
-   * Fecha modal e limpa estado
-   */
-  /**
-   * handleCancelEdit: Fecha o modal de edição e limpa estado.
-   * Por que assim? Evita inconsistências e garante que o modal sempre abre limpo.
-   *
-   * Usado em:
-   * - JobEditModal (onCancel)
-   */
   const handleCancelEdit = useCallback(() => {
     setEditModalState({
       editingJob: null,
@@ -458,20 +261,6 @@ const JobsPageContent = () => {
     });
   }, []);
 
-  /**
-   * getStatusLabel: Função utilitária para obter label do status
-   *
-   * @param status - Status da vaga
-   * @returns Label do status em português
-   */
-  /**
-   * getStatusLabel: Retorna o label amigável do status da vaga.
-   * Por que assim? Centraliza tradução dos status para evitar duplicidade.
-   *
-   * Usado em:
-   * - Exibição de status nos cards
-   * - Toasts de feedback
-   */
   const getStatusLabel = useCallback((status: JobStatus): string => {
     const statusLabels = {
       [JobStatus.APPLIED]: 'Candidatura Enviada',
@@ -484,24 +273,10 @@ const JobsPageContent = () => {
     return statusLabels[status] || status;
   }, []);
 
-  /**
-   * handleSearchTermChange: Handler memoizado para mudança de termo de pesquisa
-   *
-   * @param term - Novo termo de pesquisa
-   */
-  /**
-   * handleSearchTermChange: Atualiza o termo de pesquisa no estado.
-   * Por que assim? Permite pesquisa reativa e otimizada via useMemo.
-   *
-   * Usado em:
-   * - JobsSearchAndEmpty (setSearchTerm)
-   * - Barra de pesquisa
-   */
   const handleSearchTermChange = useCallback((term: string) => {
     setJobsState(prev => ({ ...prev, searchTerm: term }));
   }, []);
 
-  // Computed values memoizados para melhor performance
   const filteredJobs = useMemo(() => {
     return filterJobs(
       jobsState.jobs,
@@ -517,35 +292,27 @@ const JobsPageContent = () => {
 
   const totalJobs = useMemo(() => jobsState.jobs.length, [jobsState.jobs]);
 
-  // Para compatibilidade com componentes existentes
   const searchTerm = jobsState.searchTerm;
   const statusFilter = jobsState.statusFilter;
   const loading = jobsState.loading;
   const expandedCards = jobsState.expandedCards;
   const jobs = jobsState.jobs;
 
-  // Handlers para estado de edição (compatibilidade)
   const setSearchTerm = handleSearchTermChange;
   const editingJob = editModalState.editingJob;
   const editFormData = editModalState.editFormData;
   const isEditModalOpen = editModalState.isOpen;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setEditFormData = useCallback((data: any) => {
     setEditModalState(prev => ({ ...prev, editFormData: data }));
   }, []);
 
-  // ========================================
-  // RENDERIZAÇÃO CONDICIONAL: LOADING
-  // ========================================
   if (loading) {
     return <Loading message='Carregando vagas...' />;
   }
 
-  // ========================================
-  // RENDERIZAÇÃO PRINCIPAL DA PÁGINA
-  // ========================================
   return (
     <div className='max-w-7xl mx-auto p-6'>
-      {/* Cabeçalho com contadores e filtros */}
       <JobsHeader
         totalJobs={totalJobs}
         filteredJobs={filteredJobs.length}
@@ -553,7 +320,6 @@ const JobsPageContent = () => {
         statusFilter={statusFilter}
       />
 
-      {/* Barra de pesquisa e estado vazio */}
       <JobsSearchAndEmpty
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -561,7 +327,6 @@ const JobsPageContent = () => {
         filteredJobsCount={filteredJobs.length}
       />
 
-      {/* Lista de Vagas */}
       {filteredJobs.length > 0 && (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4'>
           {filteredJobs.map(job => (
@@ -578,7 +343,6 @@ const JobsPageContent = () => {
         </div>
       )}
 
-      {/* Modal de edição de vaga */}
       <JobEditModal
         isOpen={isEditModalOpen}
         editingJob={editingJob}
@@ -591,10 +355,8 @@ const JobsPageContent = () => {
   );
 };
 
-// Componente de loading para o Suspense
 const JobsPageFallback = () => <Loading message='Carregando página...' />;
 
-// Wrapper principal da página com Suspense
 const JobsPage = () => {
   return (
     <Suspense fallback={<JobsPageFallback />}>
@@ -603,4 +365,5 @@ const JobsPage = () => {
   );
 };
 
+// eslint-disable-next-line prettier/prettier
 export default JobsPage;

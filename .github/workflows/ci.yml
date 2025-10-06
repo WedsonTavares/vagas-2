@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   # ==========================================
@@ -16,34 +16,56 @@ jobs:
   test:
     name: 🧪 Tests & Quality
     runs-on: ubuntu-latest
+    env:
+      # These should be set in the GitHub repository secrets (Settings → Secrets)
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET: ${{ secrets.CLERK_SECRET }}
     
     steps:
     - name: 📦 Checkout Code
       uses: actions/checkout@v4
+      # Faz checkout do código da branch que disparou o workflow.
+      # Essencial para que os passos seguintes acessem o repositório.
       
     - name: 🟢 Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
+      # Configura a versão do Node e habilita cache de dependências para acelerar runs
         
     - name: 📋 Install Dependencies
       run: npm ci
+      # npm ci: instala dependências a partir do lockfile (package-lock.json)
+      # - Reproduz builds de forma determinística
+      # - Mais rápido e seguro em CI do que `npm install`
       
     - name: 🔍 Lint Code
       run: npm run lint
+      # npm run lint: executa o linter (ESLint) para checar qualidade do código,
+      # regras de estilo e potenciais erros estáticos. Falha a pipeline se houver
+      # erros definidos como `error` no ESLint config.
       continue-on-error: false
       
     - name: 🏗️ Build Project
       run: npm run build
+      # npm run build: compila a aplicação Next.js para checagem de erros de
+      # build e geração de assets. Garante que o projeto é compilável antes do deploy.
       continue-on-error: false
       
     - name: 🧪 Run Tests
       run: npm run test
+      # npm run test: executa a suíte de testes unitários/integrados (Jest, Vitest, etc.)
+      # Assegura comportamento esperado das funções críticas.
       continue-on-error: false
       
     - name: 📊 Type Check
       run: npm run type-check
+      # npm run type-check: executa `tsc --noEmit` para validar tipos TypeScript
+      # sem gerar artefatos. Evita regressões de tipos que causariam erros em runtime.
       continue-on-error: false
 
   # ==========================================
@@ -53,6 +75,12 @@ jobs:
     name: 🔒 Security Audit
     runs-on: ubuntu-latest
     needs: test
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET: ${{ secrets.CLERK_SECRET }}
     
     steps:
     - name: 📦 Checkout Code
@@ -69,6 +97,8 @@ jobs:
       
     - name: 🛡️ Audit Dependencies
       run: npm audit --audit-level=high
+      # `npm audit` procura vulnerabilidades conhecidas nas dependências.
+      # `--audit-level=high` falha se houver vulnerabilidades em nível alto/critico.
       continue-on-error: false
       
     - name: 🔍 Check for Secrets
@@ -86,6 +116,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, security]
     if: github.event_name == 'pull_request'
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET: ${{ secrets.CLERK_SECRET }}
     
     steps:
     - name: 📦 Checkout Code
@@ -124,6 +160,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test, security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET: ${{ secrets.CLERK_SECRET }}
     
     steps:
     - name: 📦 Checkout Code

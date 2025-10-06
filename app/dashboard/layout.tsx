@@ -1,12 +1,20 @@
 import React from 'react'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import NavBar from '@/components/NavBar'
 import NavBarMobile from '@/components/NavBarMobile'
 import Sidebar from '@/components/Sidebar'
 import { ToastProvider } from '@/components/ui/toast'
 import { ConfirmationProvider } from '@/components/ui/confirmation'
 
+const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+  const { userId } = await auth();
 
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  // Se não estiver autenticado, redireciona para login
+  if (!userId) {
+    redirect('/sign-in');
+  }
+
   return (
     <ToastProvider>
       <ConfirmationProvider>

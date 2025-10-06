@@ -60,6 +60,11 @@ const RecentJobsCard: React.FC<RecentJobsCardProps> = ({ recentJobs }) => {
    * - Formatação automática via utils
    */
   const jobItems = useMemo(() => {
+    // Verificação de segurança: garante que recentJobs é um array válido
+    if (!recentJobs || !Array.isArray(recentJobs) || recentJobs.length === 0) {
+      return [];
+    }
+    
     return recentJobs.map((job) => (
       <div
         key={job.id}  // Chave única por ID da vaga
@@ -103,7 +108,7 @@ const RecentJobsCard: React.FC<RecentJobsCardProps> = ({ recentJobs }) => {
    * - Mesmo layout/altura do estado com dados
    * - Centralização vertical e horizontal
    */
-  if (recentJobs.length === 0) {
+  if (!recentJobs || !Array.isArray(recentJobs) || recentJobs.length === 0) {
     return (
       <div className="bg-[color:var(--color-card)] p-6 rounded-xl border border-[color:var(--color-border)] h-full flex items-center justify-center">
         <div className="text-center">

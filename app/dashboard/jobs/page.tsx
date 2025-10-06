@@ -25,7 +25,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
-import { getJobs, deleteJob, deleteRejectedJob, updateJob } from '@/lib/api'
+import { getJobs, deleteJob, updateJob } from '@/lib/api'
 import { Job, JobType, JobMode, JobStatus } from '@/types'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from '@/components/ui/toast'
@@ -327,11 +327,8 @@ const JobsPageContent = () => {
     })
     if (confirmed) {
       try {
-        if (isRejected) {
-          await deleteRejectedJob(jobId)
-        } else {
-          await deleteJob(jobId)
-        }
+        // Para vagas rejeitadas ou normais, usar a mesma API
+        await deleteJob(jobId)
         await loadJobs()
         addToast({
           type: 'success',

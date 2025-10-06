@@ -1,14 +1,13 @@
-'use client'
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+export default async function DashboardPage() {
+  const { userId, redirectToSignIn } = await auth();
 
-export default function DashboardPage() {
-  const router = useRouter()
+  if (!userId) {
+    return redirectToSignIn();
+  }
 
-  useEffect(() => {
-    router.replace('/dashboard/jobs')
-  }, [router])
-
-  return null
+  // Redirecionar para a página de jobs
+  redirect('/dashboard/jobs');
 }

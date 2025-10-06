@@ -68,10 +68,29 @@ async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
 
     // Verifica status HTTP
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ 
-        error: response.status === 404 ? 'Recurso não encontrado' : 'Erro de rede' 
-      }));
-      throw new Error(error.error || `Erro HTTP: ${response.status}`);
+      let errorMessage = `Erro HTTP: ${response.status}`;
+      
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+        
+        // Log detalhado para debug
+        console.error('❌ Erro da API:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: url,
+          method: options?.method || 'GET',
+          error: errorData
+        });
+        
+      } catch (parseError) {
+        console.error('❌ Erro ao fazer parse do erro da API:', parseError);
+        errorMessage = response.status === 404 ? 'Recurso não encontrado' : 
+                      response.status === 500 ? 'Erro interno do servidor - verifique a configuração do banco' :
+                      'Erro de rede';
+      }
+      
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -137,6 +156,7 @@ export async function getJobs(filters?: {
   if (filters?.mode) params.append('mode', filters.mode);
 
   const url = params.toString() ? `${API_BASE}?${params}` : API_BASE;
+  
   return apiRequest<Job[]>(url);
 }
 
@@ -178,6 +198,9 @@ export async function createJob(data: CreateJobData): Promise<Job> {
     throw new Error('Título e empresa são obrigatórios');
   }
   
+  // Limpar cache após criação
+  clearStatsCache();
+  
   return apiRequest<Job>(API_BASE, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -189,6 +212,9 @@ export async function updateJob(id: string, data: Partial<CreateJobData>): Promi
   if (!id || typeof id !== 'string') {
     throw new Error('ID da vaga é obrigatório');
   }
+  
+  // Limpar cache após atualização
+  clearStatsCache();
   
   return apiRequest<Job>(`${API_BASE}/${encodeURIComponent(id)}`, {
     method: 'PUT',
@@ -202,19 +228,26 @@ export async function deleteJob(id: string): Promise<{ message: string }> {
     throw new Error('ID da vaga é obrigatório');
   }
   
+  // Limpar cache após exclusão
+  clearStatsCache();
+  
   return apiRequest<{ message: string }>(`${API_BASE}/${encodeURIComponent(id)}`, {
     method: 'DELETE',
   });
 }
 
-// Deletar vaga rejeitada do histórico
-export async function deleteRejectedJob(id: string): Promise<{ message: string }> {
-  if (!id || typeof id !== 'string') {
+// Marcar vaga como rejeitada
+export async function rejectJob(jobId: string): Promise<{ message: string; job: Job }> {
+  if (!jobId || typeof jobId !== 'string') {
     throw new Error('ID da vaga é obrigatório');
   }
   
-  return apiRequest<{ message: string }>(`${API_BASE}/rejected?id=${encodeURIComponent(id)}`, {
-    method: 'DELETE',
+  // Limpar cache após rejeição
+  clearStatsCache();
+  
+  return apiRequest<{ message: string; job: Job }>(`${API_BASE}/rejected`, {
+    method: 'POST',
+    body: JSON.stringify({ jobId }),
   });
 }
 

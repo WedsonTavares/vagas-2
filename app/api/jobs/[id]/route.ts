@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
-import { JobType, JobMode, JobStatus } from '@/types';
+import { createClient } from '@supabase/supabase-js';
 
-// GET /api/jobs/[id] - Buscar vaga por ID
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+// GET /api/jobs/[id] - Buscar vaga específica
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -13,25 +17,30 @@ export async function GET(
     const { id } = await params;
     
     if (!userId) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const job = await prisma.job.findFirst({
-      where: {
-        id,
-        userId,
-      },
-    });
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('id', id)
+      .eq('userId', userId)
+      .single();
 
-    if (!job) {
+    if (error) {
+      console.error('❌ [SUPABASE] Erro ao buscar vaga:', error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    if (!data) {
       return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
     }
 
-    return NextResponse.json(job);
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Erro ao buscar vaga:', error);
+    console.error('❌ API GET /jobs/[id]: Erro:', error);
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -47,106 +56,56 @@ export async function PUT(
     const { id } = await params;
     
     if (!userId) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
     
-    const {
-      title,
-      company,
-      location,
-      type,
-      mode,
-      status,
-      description,
-      requirements,
-      salary,
-      benefits,
-      applicationUrl,
-      applicationEmail,
-      notes,
-      appliedAt,
-    } = body;
+    // Remover campos que não devem ser atualizados
+    const { id: _, userId: __, createdAt, ...updateData } = body;
+    
+    // Adicionar timestamp de atualização
+    updateData.updatedAt = new Date().toISOString();
+
+    console.log('🔍 [SUPABASE] Atualizando vaga:', id);
 
     // Verificar se a vaga existe e pertence ao usuário
-    const existingJob = await prisma.job.findFirst({
-      where: {
-        id,
-        userId,
-      },
-    });
+    const { data: existingJob } = await supabase
+      .from('jobs')
+      .select('id')
+      .eq('id', id)
+      .eq('userId', userId)
+      .single();
 
     if (!existingJob) {
       return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
     }
 
-    // Se o status está sendo mudado para REJECTED, salvar no histórico e excluir
-    if (status === 'REJECTED') {
-      // Salvar no histórico de rejeições
-      await prisma.rejectedJobLog.create({
-        data: {
-          userId,
-          title: existingJob.title,
-          company: existingJob.company,
-        },
-      });
+    // Atualizar vaga
+    const { data, error } = await supabase
+      .from('jobs')
+      .update(updateData)
+      .eq('id', id)
+      .eq('userId', userId)
+      .select()
+      .single();
 
-      // Excluir a vaga
-      await prisma.job.delete({
-        where: {
-          id,
-        },
-      });
-
-      console.log(`🔴 Vaga rejeitada e movida para histórico: ${existingJob.title}`);
-      return NextResponse.json({ 
-        message: 'Vaga rejeitada e movida para histórico',
-        rejectedJob: {
-          title: existingJob.title,
-          company: existingJob.company
-        }
-      });
+    if (error) {
+      console.error('❌ [SUPABASE] Erro ao atualizar vaga:', error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Para outros status, fazer update normal
-    const updatedJob = await prisma.job.update({
-      where: {
-        id,
-      },
-      data: {
-        ...(title && { title }),
-        ...(company && { company }),
-        ...(location !== undefined && { location }),
-        ...(type && { type }),
-        ...(mode && { mode }),
-        ...(status && { status }),
-        ...(description !== undefined && { description }),
-        ...(requirements !== undefined && { requirements }),
-        ...(salary !== undefined && { salary }),
-        ...(benefits !== undefined && { benefits }),
-        ...(applicationUrl !== undefined && { applicationUrl }),
-        ...(applicationEmail !== undefined && { applicationEmail }),
-        ...(notes !== undefined && { notes }),
-        ...(appliedAt !== undefined && { 
-          appliedAt: appliedAt ? new Date(appliedAt) : null 
-        }),
-      },
-    });
-
-    console.log(`✅ Vaga atualizada com sucesso: ${id}`);
-    return NextResponse.json(updatedJob);
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('❌ Erro ao atualizar vaga:', error);
-    console.error('❌ Detalhes do erro:', error instanceof Error ? error.message : String(error));
+    console.error('❌ API PUT /jobs/[id]: Erro:', error);
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
 }
 
-// DELETE /api/jobs/[id] - Deletar vaga
+// DELETE /api/jobs/[id] - Excluir vaga
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -156,32 +115,44 @@ export async function DELETE(
     const { id } = await params;
     
     if (!userId) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Verificar se a vaga existe e pertence ao usuário
-    const existingJob = await prisma.job.findFirst({
-      where: {
-        id,
-        userId,
-      },
-    });
+    console.log('🔍 [SUPABASE] Excluindo vaga:', id);
+
+    // Verificar se a vaga existe e pertence ao usuário antes de excluir
+    const { data: existingJob } = await supabase
+      .from('jobs')
+      .select('id, title, company')
+      .eq('id', id)
+      .eq('userId', userId)
+      .single();
 
     if (!existingJob) {
       return NextResponse.json({ error: 'Vaga não encontrada' }, { status: 404 });
     }
 
-    await prisma.job.delete({
-      where: {
-        id,
-      },
-    });
+    // Excluir vaga
+    const { error } = await supabase
+      .from('jobs')
+      .delete()
+      .eq('id', id)
+      .eq('userId', userId);
 
-    return NextResponse.json({ message: 'Vaga deletada com sucesso' });
+    if (error) {
+      console.error('❌ [SUPABASE] Erro ao excluir vaga:', error.message);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    console.log(`✅ [SUPABASE] Vaga "${existingJob.title}" excluída com sucesso`);
+    return NextResponse.json({ 
+      success: true,
+      message: 'Vaga excluída com sucesso' 
+    });
   } catch (error) {
-    console.error('Erro ao deletar vaga:', error);
+    console.error('❌ API DELETE /jobs/[id]: Erro:', error);
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

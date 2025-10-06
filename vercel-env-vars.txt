@@ -1,0 +1,19 @@
+# ✅ VARIÁVEIS OBRIGATÓRIAS PARA O VERCEL
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://aajbwnllgqxlolyqdcwe.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhamJ3bmxsZ3F4bG9seXFkY3dlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNjI2NzQsImV4cCI6MjA3NDkzODY3NH0.Ak6_2Pl11Q4kgVUdpvfc5HcWDLkgPR-ZUkfIsq-rXeI
+DATABASE_URL=postgresql://postgres:99028461@db.aajbwnllgqxlolyqdcwe.supabase.co:5432/postgres?schema=public&sslmode=require&connect_timeout=10
+
+# Clerk Authentication  
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_cHJvbW90ZWQtZG9scGhpbi02Mi5jbGVyay5hY2NvdW50cy5kZXYk
+CLERK_SECRET_KEY=sk_test_kvtLBk0lN5wszP2ZJ7deiWNGnK9TtDx0OCJzM9kHIU
+
+# Clerk Redirects
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL=/dashboard
+
+# ⚠️ IMPORTANTE: Copie EXATAMENTE esses valores no Vercel

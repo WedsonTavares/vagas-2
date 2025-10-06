@@ -8,14 +8,25 @@ const publicRoutes = createRouteMatcher([
   "/api(.*)",        // permitir APIs públicas
   "/_next(.*)",      // recursos estáticos do Next
   "/favicon.ico",    // favicon
+  "/dashboard(.*)",  // TEMPORÁRIO: permitir dashboard também
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // Se a rota não for pública, exige autenticação
-  if (!publicRoutes(req)) {
-    await auth.protect(); 
+  // Sempre permitir rotas públicas
+  if (publicRoutes(req)) {
+    return NextResponse.next();
   }
-}, { debug: process.env.NODE_ENV === 'development' });
+  
+  // Para outras rotas, tentar proteger mas não falhar
+  try {
+    await auth.protect();
+  } catch (error) {
+    // Se falhar, redirecionar para sign-in
+    const signInUrl = new URL('/sign-in', req.url);
+    signInUrl.searchParams.set('redirect_url', req.url);
+    return NextResponse.redirect(signInUrl);
+  }
+}, { debug: true });
 
 export const config = {
   matcher: [

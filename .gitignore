@@ -81,3 +81,35 @@ lerna-debug.log*
 .clerk/
 
 /lib/generated/prisma
+
+# Arquivos de teste e debug (histórico)
+test-*.js
+test-*.sql
+debug-*.js
+debug-*.sql
+diagnose-*.sql
+FIX-*.sql
+GRANT-*.sql
+ENABLE-*.sql
+
+# Cache de ferramentas
+.cache/
+.eslintcache
+.stylelintcache
+
+# Backup files
+*.bak
+*.backup
+
+# Build artifacts
+build/
+dist/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Certificados e chaves (segurança)
+*.key
+*.crt
+*.cert

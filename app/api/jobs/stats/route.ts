@@ -1,31 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supabase-backend';
 
 // GET /api/jobs/stats - Estatísticas das vagas do usuário
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
     
-    if (!userId) {
+    if (!userId || !validateUserId(userId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Buscar todas as vagas do usuário
-    const { data: jobs, error } = await supabase
-      .from('jobs')
-      .select('id, title, company, status, type, mode, createdAt')
-      .eq('userId', userId);
+    // Buscar todas as vagas do usuário usando Service Role Key
+    const result = await executeSecureQuery(
+      supabaseBackend
+        .from('jobs')
+        .select('id, title, company, status, type, mode, createdAt')
+        .eq('userId', userId),
+      'GET /jobs/stats - Get user job statistics',
+      userId
+    );
 
-    if (error) {
-      console.error('❌ [SUPABASE] Erro ao buscar vagas para stats:', error.message);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (result.error) {
+      console.error('❌ [SUPABASE-BACKEND] Erro ao buscar vagas para stats:', result.error.message);
+      return NextResponse.json({ error: result.error.message }, { status: 500 });
     }
+
+    const jobs = (result.data || []) as any[];
 
     // Calcular estatísticas manualmente
     const totalJobs = jobs.length;

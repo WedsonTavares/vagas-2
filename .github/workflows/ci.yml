@@ -1,0 +1,171 @@
+name: 🔧 CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # ==========================================
+  # JOB 1: TESTS & QUALITY CHECKS
+  # ==========================================
+  test:
+    name: 🧪 Tests & Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📦 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 📋 Install Dependencies
+      run: npm ci
+      
+    - name: 🔍 Lint Code
+      run: npm run lint
+      continue-on-error: false
+      
+    - name: 🏗️ Build Project
+      run: npm run build
+      continue-on-error: false
+      
+    - name: 🧪 Run Tests
+      run: npm run test
+      continue-on-error: false
+      
+    - name: 📊 Type Check
+      run: npm run type-check
+      continue-on-error: false
+
+  # ==========================================
+  # JOB 2: SECURITY AUDIT
+  # ==========================================
+  security:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: 📦 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 📋 Install Dependencies
+      run: npm ci
+      
+    - name: 🛡️ Audit Dependencies
+      run: npm audit --audit-level=high
+      continue-on-error: false
+      
+    - name: 🔍 Check for Secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+
+  # ==========================================
+  # JOB 3: DEPLOY PREVIEW (only for PRs)
+  # ==========================================
+  deploy-preview:
+    name: 🚀 Deploy Preview
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📦 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 📋 Install Dependencies
+      run: npm ci
+      
+    - name: 🏗️ Build for Preview
+      run: npm run build
+      env:
+        NODE_ENV: development
+        
+    - name: 📝 Comment PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '🚀 **Deploy Preview Ready!** \n\n✅ Build completed successfully \n✅ Tests passed \n✅ Security checks passed \n\n**Branch:** `${{ github.head_ref }}`'
+          })
+
+  # ==========================================
+  # JOB 4: DEPLOY PRODUCTION (only main branch)
+  # ==========================================
+  deploy-production:
+    name: 🌟 Deploy Production
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: 📦 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: 📋 Install Dependencies
+      run: npm ci
+      
+    - name: 🏗️ Build for Production
+      run: npm run build
+      env:
+        NODE_ENV: production
+        
+    - name: 📝 Create Release Notes
+      run: |
+        echo "🎉 **New Release Deployed!**" >> release-notes.md
+        echo "" >> release-notes.md
+        echo "**Commit:** \`${{ github.sha }}\`" >> release-notes.md
+        echo "**Branch:** \`${{ github.ref_name }}\`" >> release-notes.md
+        echo "**Time:** \`$(date)\`" >> release-notes.md
+        echo "" >> release-notes.md
+        echo "✅ All tests passed" >> release-notes.md
+        echo "✅ Security audit passed" >> release-notes.md
+        echo "✅ Build successful" >> release-notes.md
+        
+    - name: 🎯 Post to Issues (Deployment Log)
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const releaseNotes = fs.readFileSync('release-notes.md', 'utf8');
+          
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `🚀 Deployment Log - ${new Date().toISOString().split('T')[0]}`,
+            body: releaseNotes,
+            labels: ['deployment', 'production']
+          })

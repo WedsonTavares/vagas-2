@@ -1,0 +1,14 @@
+# Prettier ignore file
+.next
+node_modules
+*.lock
+*.log
+.env*
+public
+.git
+.github
+CHANGELOG.md
+dist
+coverage
+*.min.js
+*.min.css

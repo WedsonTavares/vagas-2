@@ -38,6 +38,8 @@ jobs:
         
     - name: 📋 Install Dependencies
       run: npm ci
+      env:
+        NODE_ENV: ''
       # npm ci: instala dependências a partir do lockfile (package-lock.json)
       # - Reproduz builds de forma determinística
       # - Mais rápido e seguro em CI do que `npm install`
@@ -92,7 +94,10 @@ jobs:
         cache: 'npm'
         
     - name: 📋 Install Dependencies
+    - name: 📋 Install Dependencies
       run: npm ci
+      env:
+        NODE_ENV: ''
       
     - name: 🛡️ Audit Dependencies
       run: npm audit --audit-level=high
@@ -134,6 +139,8 @@ jobs:
         
     - name: 📋 Install Dependencies
       run: npm ci
+      env:
+        NODE_ENV: ''
       
     - name: 🏗️ Build for Preview
       run: npm run build
@@ -177,6 +184,8 @@ jobs:
         
     - name: 📋 Install Dependencies
       run: npm ci
+      env:
+        NODE_ENV: ''
       
     - name: 🏗️ Build for Production
       run: npm run build

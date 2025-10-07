@@ -1,5 +1,11 @@
 name: 🔧 CI/CD Pipeline
 
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+  actions: read
+
 on:
   push:
     branches: [ main, develop ]

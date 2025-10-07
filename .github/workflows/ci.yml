@@ -23,8 +23,6 @@ jobs:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
       CLERK_SECRET: ${{ secrets.CLERK_SECRET }}
-    
-    env:
       NODE_ENV: production
     steps:
     - name: 📦 Checkout Code
@@ -124,8 +122,6 @@ jobs:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
       CLERK_SECRET: ${{ secrets.CLERK_SECRET }}
-    
-    env:
       NODE_ENV: production
     steps:
     - name: 📦 Checkout Code

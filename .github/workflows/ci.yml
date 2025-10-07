@@ -24,6 +24,8 @@ jobs:
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
       CLERK_SECRET: ${{ secrets.CLERK_SECRET }}
     
+    env:
+      NODE_ENV: production
     steps:
     - name: 📦 Checkout Code
       uses: actions/checkout@v4
@@ -123,6 +125,8 @@ jobs:
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
       CLERK_SECRET: ${{ secrets.CLERK_SECRET }}
     
+    env:
+      NODE_ENV: production
     steps:
     - name: 📦 Checkout Code
       uses: actions/checkout@v4
@@ -138,8 +142,6 @@ jobs:
       
     - name: 🏗️ Build for Preview
       run: npm run build
-      env:
-        NODE_ENV: development
         
     - name: 📝 Comment PR
       uses: actions/github-script@v7
@@ -161,6 +163,7 @@ jobs:
     needs: [test, security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     env:
+      NODE_ENV: production
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

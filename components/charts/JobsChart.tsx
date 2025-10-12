@@ -126,7 +126,7 @@ const JobsChart: React.FC<JobsChartProps> = ({ stats }) => {
   // ========================================
 
   return (
-    <div className='bg-[color:var(--color-card)] p-6 rounded-xl border border-[color:var(--color-border)] h-full'>
+  <div className={`bg-[color:var(--color-card)] p-4 rounded-xl border border-[color:var(--color-border)] h-full max-w-80`}>
       {/* Header com informações */}
       <div className='mb-4'>
         <h3 className='text-lg font-semibold text-[color:var(--color-card-foreground)]'>
@@ -137,21 +137,21 @@ const JobsChart: React.FC<JobsChartProps> = ({ stats }) => {
         </p>
       </div>
 
-      {/* Container do gráfico com altura fixa */}
-      <div className='h-80'>
+  {/* Container do gráfico com altura reduzida */}
+  <div className='h-36'>
         <ResponsiveContainer width='100%' height='100%'>
           <PieChart>
             <Pie
               data={chartData}
-              cx='50%' // Centro horizontal
-              cy='50%' // Centro vertical
-              innerRadius={50} // Raio interno (donut)
-              outerRadius={80} // Raio externo
-              paddingAngle={3} // Espaço entre segmentos
-              dataKey='value' // Campo dos dados
-              label={false} // Sem labels no gráfico (evita cortes)
-              stroke='var(--color-background)' // Borda dos segmentos
-              strokeWidth={2} // Largura da borda
+              cx='50%'
+              cy='50%'
+              innerRadius={35} // Raio interno menor
+              outerRadius={55} // Raio externo menor
+              paddingAngle={3}
+              dataKey='value'
+              label={false}
+              stroke='var(--color-background)'
+              strokeWidth={2}
             >
               {/* Renderizar cada segmento com cor específica */}
               {chartData.map((entry, index) => (

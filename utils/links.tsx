@@ -14,12 +14,12 @@ const links: Array<NavLink> = [
   },
   {
     href: '/dashboard/jobs',
-    label: 'Vagas',
+    label: 'Candidaturas',
     icon: <AppWindow size={16} />,
   },
   {
     href: '/dashboard/stats',
-    label: 'Status das Vagas',
+    label: 'Status das Candidaturas',
     icon: <AreaChart size={16} />,
   },
 ];

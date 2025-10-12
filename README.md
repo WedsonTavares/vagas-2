@@ -471,3 +471,10 @@ Este projeto está sob a licença MIT.
 
 **Wedson Tavares**  
 GitHub: [@WedsonTavares](https://github.com/WedsonTavares)
+
+
+
+
+Criar a dashboard para bater metas da estrategia recolocação
+
+juntar vagas, status e + vagas no meno link

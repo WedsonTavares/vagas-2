@@ -12,7 +12,7 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className='py-6 px-6 bg-muted h-full'>
+    <aside className='py-6 px-6 bg-[color:var(--sidebar)] h-full'>
       <Image src={Logo} alt='logo' className='mx-auto max-w-40' />
       <div className='flex flex-col mt-12 gap-y-3'>
         {links.map(link => (

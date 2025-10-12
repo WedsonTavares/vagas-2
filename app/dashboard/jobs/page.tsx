@@ -25,7 +25,6 @@ import Loading from '@/components/ui/loading';
 interface JobsState {
   jobs: Job[];
   searchTerm: string;
-  statusFilter: JobStatus | null;
   loading: boolean;
   expandedCards: Set<string>;
 }
@@ -41,11 +40,12 @@ const JobsPageContent = () => {
   const { addToast } = useToast();
   const { confirm } = useConfirmation();
 
+  const statusFilter = searchParams ? (searchParams.get('status') as JobStatus | undefined) : undefined;
+
   const [jobsState, setJobsState] = useState<JobsState>({
     jobs: [],
     loading: true,
     searchTerm: '',
-    statusFilter: null,
     expandedCards: new Set<string>(),
   });
 
@@ -73,9 +73,7 @@ const JobsPageContent = () => {
   const loadJobs = useCallback(async () => {
     try {
       setJobsState(prev => ({ ...prev, loading: true }));
-      const filters = jobsState.statusFilter
-        ? { status: jobsState.statusFilter }
-        : {};
+      const filters = statusFilter ? { status: statusFilter } : {};
       const data = await getJobs(filters);
       setJobsState(prev => ({
         ...prev,
@@ -90,7 +88,7 @@ const JobsPageContent = () => {
         description: 'Não foi possível carregar as vagas. Tente novamente.',
       });
     }
-  }, [jobsState.statusFilter, addToast]);
+  }, [statusFilter, addToast]);
 
   const filterJobs = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -114,14 +112,6 @@ const JobsPageContent = () => {
   useEffect(() => {
     loadJobs();
   }, [loadJobs]);
-
-  // ================= CORREÇÃO ===================
-  useEffect(() => {
-    // eslint-disable-next-line prettier/prettier
-    const status = searchParams ? (searchParams.get('status') as JobStatus | null) : null;
-    setJobsState(prev => ({ ...prev, statusFilter: status }));
-  }, [searchParams]);
-  // ==============================================
 
   const handleStatusChange = useCallback(
     async (jobId: string, newStatus: JobStatus) => {
@@ -281,19 +271,13 @@ const JobsPageContent = () => {
     return filterJobs(
       jobsState.jobs,
       jobsState.searchTerm,
-      jobsState.statusFilter || undefined
+      statusFilter
     );
-  }, [
-    jobsState.jobs,
-    jobsState.searchTerm,
-    jobsState.statusFilter,
-    filterJobs,
-  ]);
+  }, [jobsState.jobs, jobsState.searchTerm, statusFilter, filterJobs]);
 
   const totalJobs = useMemo(() => jobsState.jobs.length, [jobsState.jobs]);
 
   const searchTerm = jobsState.searchTerm;
-  const statusFilter = jobsState.statusFilter;
   const loading = jobsState.loading;
   const expandedCards = jobsState.expandedCards;
   const jobs = jobsState.jobs;
@@ -308,7 +292,7 @@ const JobsPageContent = () => {
   }, []);
 
   if (loading) {
-    return <Loading message='Carregando vagas...' />;
+    return <Loading message='Carregando...' />;
   }
 
   return (

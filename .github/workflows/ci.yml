@@ -1,4 +1,5 @@
-name: 🔧 CI/CD Pipeline
+
+# name: 🔧 CI/CD Pipeline
 
 permissions:
   issues: write
@@ -6,11 +7,12 @@ permissions:
   contents: read
   actions: read
 
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+# on:
+#   push:
+#     branches: [ main, develop ]
+#   pull_request:
+#     branches: [ main, develop ]
+
 
 env:
   NODE_VERSION: '20'

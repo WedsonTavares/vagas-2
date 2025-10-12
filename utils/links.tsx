@@ -6,7 +6,13 @@ type NavLink = {
   icon: React.ReactNode;
 };
 
+
 const links: Array<NavLink> = [
+  {
+    href: '/dashboard/goals',
+    label: 'Metas Diárias',
+    icon: <AreaChart size={16} />,
+  },
   {
     href: '/dashboard/add-job',
     label: 'Adicionar Vaga',

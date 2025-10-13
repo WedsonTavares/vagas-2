@@ -41,33 +41,6 @@ const links: Array<NavLink> = [
     ],
   },
   {
-    href: '/dashboard/cursos',
-    label: 'Cursos +',
-    icon: <BookOpen size={16} />,
-    children: [
-      {
-        href: '/dashboard/cursos/andamento',
-        label: 'Em Andamento',
-        icon: <Play size={16} />,
-      },
-      {
-        href: '/dashboard/cursos/pendentes',
-        label: 'Em Pendentes',
-        icon: <Clock size={16} />,
-      },
-      {
-        href: '/dashboard/cursos/completos',
-        label: 'Completos',
-        icon: <CheckCircle size={16} />,
-      },
-      {
-        href: '/dashboard/cursos/certificados',
-        label: 'Certificados',
-        icon: <Award size={16} />,
-      }
-    ],
-  },
-  {
     label: 'Faculdade',
     icon: <GraduationCap size={16} />,
     children: [
@@ -103,6 +76,33 @@ const links: Array<NavLink> = [
           }
         ]
       },
+    ],
+  },
+  {
+    href: '/dashboard/cursos',
+    label: 'Cursos +',
+    icon: <BookOpen size={16} />,
+    children: [
+      {
+        href: '/dashboard/cursos/andamento',
+        label: 'Em Andamento',
+        icon: <Play size={16} />,
+      },
+      {
+        href: '/dashboard/cursos/pendentes',
+        label: 'Em Pendentes',
+        icon: <Clock size={16} />,
+      },
+      {
+        href: '/dashboard/cursos/completos',
+        label: 'Completos',
+        icon: <CheckCircle size={16} />,
+      },
+      {
+        href: '/dashboard/cursos/certificados',
+        label: 'Certificados',
+        icon: <Award size={16} />,
+      }
     ],
   },
   {

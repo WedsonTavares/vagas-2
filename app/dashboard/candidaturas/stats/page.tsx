@@ -165,11 +165,13 @@ const StatsPage = () => {
     if (!stats) return null;
 
     return (
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6'>
-        <div className='order-1'>
-          <JobsChart stats={stats} />
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 items-stretch'>
+        <div className='order-1 h-full'>
+          <div className='bg-[color:var(--color-card)] p-6 rounded-xl border border-[color:var(--color-border)] h-full'>
+            <JobsChart stats={stats} />
+          </div>
         </div>
-        <div className='order-2'>
+        <div className='order-2 h-full'>
           <RecentJobsCard recentJobs={stats.recentJobs} />
         </div>
       </div>

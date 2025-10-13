@@ -219,13 +219,13 @@
     "id": "19",
     "codigo": "MARA3340",
     "nome": "PROTOCOLOS DE REDES DE COMPUTADORES",
-    "professor": "",
+    "professor": "Gabriel Bau",
     "titulacao": "",
     "cargaHoraria": 80,
-    "grau": null,
-    "status": "cursando",
+    "grau": 10,
+    "status": "concluido",
     "periodo": "2025.2",
-    "situacao": "CURSANDO"
+    "situacao": "AP"
   },
   {
     "id": "20",

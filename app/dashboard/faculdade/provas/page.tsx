@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useConfirmation } from '@/components/ui/confirmation';
+import { useToast } from '@/components/ui/toast';
 import { Exam } from '@/types';
 
 export default function ProvasPage() {
@@ -23,6 +24,7 @@ export default function ProvasPage() {
   const [completeGrade, setCompleteGrade] = useState<string>('');
   const [completeProfessor, setCompleteProfessor] = useState<string>('');
   const { confirm } = useConfirmation();
+  const { addToast } = useToast();
 
   const fetchExams = async () => {
     setLoading(true);
@@ -44,7 +46,10 @@ export default function ProvasPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!materia || !examDate) return alert('Preencha matéria e data');
+    if (!materia || !examDate) {
+      addToast({ type: 'error', title: 'Preencha matéria e data' });
+      return;
+    }
     setSaving(true);
     try {
       const body = { materia, examDate, examTime, location, notes };
@@ -66,7 +71,7 @@ export default function ProvasPage() {
       setNotes('');
     } catch (err) {
       console.error(err);
-      alert((err as Error).message || 'Erro');
+      addToast({ type: 'error', title: (err as Error).message || 'Erro' });
     } finally {
       setSaving(false);
     }
@@ -98,7 +103,7 @@ export default function ProvasPage() {
       await fetchExams();
     } catch (err) {
       console.error(err);
-      alert((err as Error).message || 'Erro ao excluir prova');
+      addToast({ type: 'error', title: (err as Error).message || 'Erro ao excluir prova' });
     }
   };
 
@@ -112,7 +117,8 @@ export default function ProvasPage() {
     // validate grade if provided
     const gradeNum = completeGrade ? Number(completeGrade) : null;
     if (completeGrade && (isNaN(gradeNum as number) || gradeNum! < 0)) {
-      return alert('Nota inválida');
+      addToast({ type: 'error', title: 'Nota inválida' });
+      return;
     }
 
     try {
@@ -132,7 +138,7 @@ export default function ProvasPage() {
       setCompletingExamId(null);
     } catch (err) {
       console.error(err);
-      alert((err as Error).message || 'Erro');
+      addToast({ type: 'error', title: (err as Error).message || 'Erro' });
     }
   };
 

@@ -12,7 +12,8 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
 
   // Se não estiver autenticado, redireciona para login
   if (!userId) {
-    redirect('/sign-in');
+    const signInPath = process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || '/sign-in';
+    redirect(signInPath);
   }
 
   return (

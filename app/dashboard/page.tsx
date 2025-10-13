@@ -8,6 +8,6 @@ export default async function DashboardPage() {
     return redirectToSignIn();
   }
 
-  // Redirecionar para a página de jobs
-  redirect('/dashboard/jobs');
+  // Redirecionar para a página de metas
+  redirect('/dashboard/metas');
 }

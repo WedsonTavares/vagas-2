@@ -125,9 +125,13 @@ setInterval(() => {
   }
 
   if (cleanedCount > 0) {
-    console.log(
-      `🧹 Rate Limit: Limpou ${cleanedCount} entradas expiradas. Total restante: ${rateLimitStore.size}`
-    );
+    // Evitar logs em produção - habilite DEBUG_RATE_LIMIT=1 para debug
+    if (process.env.DEBUG_RATE_LIMIT === '1') {
+      // eslint-disable-next-line no-console
+      console.log(
+        `🧹 Rate Limit: Limpou ${cleanedCount} entradas expiradas. Total restante: ${rateLimitStore.size}`
+      );
+    }
   }
 }, CLEANUP_INTERVAL);
 

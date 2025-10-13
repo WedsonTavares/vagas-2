@@ -5,14 +5,12 @@ import { useRouter } from 'next/navigation';
 interface JobsSearchAndEmptyProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  hasJobs: boolean;
   filteredJobsCount: number;
 }
 
 const JobsSearchAndEmpty: React.FC<JobsSearchAndEmptyProps> = ({
   searchTerm,
   setSearchTerm,
-  hasJobs,
   filteredJobsCount,
 }) => {
   const router = useRouter();
@@ -103,8 +101,8 @@ const JobsSearchAndEmpty: React.FC<JobsSearchAndEmptyProps> = ({
           <p className='text-[color:var(--color-muted-foreground)] mb-6'>
             {searchTerm ? (
               <>
-                Não encontramos vagas que correspondam à pesquisa
-                <strong>"{searchTerm}"</strong>.
+                 Não encontramos vagas que correspondam à pesquisa
+                 <strong>&quot;{searchTerm}&quot;</strong>.
                 <br />
                 Tente usar outros termos ou limpe o filtro.
               </>
@@ -122,7 +120,7 @@ const JobsSearchAndEmpty: React.FC<JobsSearchAndEmptyProps> = ({
             </Button>
           ) : null}
           <Button
-            onClick={() => router.push('/dashboard/add-job')}
+            onClick={() => router.push('/dashboard/candidaturas/add-job')}
             className='bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:var(--color-primary)]/90'
           >
             + {searchTerm ? 'Adicionar Nova Vaga' : 'Adicionar Primeira Vaga'}

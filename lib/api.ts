@@ -74,16 +74,9 @@ async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
         const errorData = await response.json();
         errorMessage = errorData.error || errorData.message || errorMessage;
 
-        // Log detalhado para debug
-        console.error('❌ Erro da API:', {
-          status: response.status,
-          statusText: response.statusText,
-          url: url,
-          method: options?.method || 'GET',
-          error: errorData,
-        });
-      } catch (parseError) {
-        console.error('❌ Erro ao fazer parse do erro da API:', parseError);
+        // Log removido para produção
+      } catch {
+        // Parse error handling without console output
         errorMessage =
           response.status === 404
             ? 'Recurso não encontrado'
@@ -115,25 +108,22 @@ async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
 // SISTEMA DE CACHE PARA ESTATÍSTICAS
 // ========================================
 
+import { JobStats } from '@/types';
+
 /**
- * Cache simples em memória para estatísticas
+ * Cache para stats
  *
- * Por que implementar cache:
- * - Estatísticas mudam pouco frequentemente
- * - Reduz carga no servidor
- * - Melhora velocidade da UI
- * - Economiza bandwidth
- *
- * Estrutura:
- * - data: Dados das estatísticas
- * - timestamp: Momento do cache
+ * Por que cache:
+ * - Stats são consultadas frequentemente
+ * - Dados mudam pouco
+ * - Melhora performance significativamente
  *
  * TTL (Time To Live): 5 minutos
  * - Balanço entre performance e atualização
  * - Permite ver mudanças recentes
  * - Não sobrecarrega a API
  */
-let statsCache: { data: any; timestamp: number } | null = null;
+let statsCache: { data: JobStats; timestamp: number } | null = null;
 const STATS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 // Buscar vagas rejeitadas (histórico)
@@ -283,7 +273,7 @@ export async function getJobStats(): Promise<{
   }
 
   // Buscar dados atualizados
-  const data = await apiRequest<any>(`${API_BASE}/stats`);
+  const data = await apiRequest<JobStats>(`${API_BASE}/stats`);
 
   // Atualizar cache
   statsCache = {

@@ -24,13 +24,11 @@ import React, { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { JobStatus } from '@/types';
 
+import { JobStats } from '@/types';
+
 // ========================================
 // INTERFACES E TIPOS
 // ========================================
-
-interface JobStats {
-  byStatus?: Record<string, number>;
-}
 
 interface StatusCardsProps {
   stats: JobStats;
@@ -113,8 +111,8 @@ const StatusCards: React.FC<StatusCardsProps> = ({ stats }) => {
   const navigateToJobsWithFilter = useCallback(
     (status?: string) => {
       const url = status
-        ? `/dashboard/jobs?status=${status}`
-        : '/dashboard/jobs';
+        ? `/dashboard/candidaturas/jobs?status=${status}`
+        : '/dashboard/candidaturas/jobs';
       router.push(url);
     },
     [router]

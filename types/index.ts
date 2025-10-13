@@ -124,3 +124,81 @@ export interface ChartDataItem {
   color: string; // Ex: "#3b82f6"
   status: JobStatus; // Ex: JobStatus.APPLIED
 }
+
+// ========================================
+// TIPOS PARA FACULDADE
+// ========================================
+
+/**
+ * Status das matérias da faculdade
+ */
+export enum MateriaStatus {
+  CONCLUIDO = 'concluido',
+  CURSANDO = 'cursando', 
+  FALTA_CURSAR = 'falta_cursar'
+}
+
+/**
+ * Materia: Tipo para matérias da faculdade
+ *
+ * Usado em: 
+ * - Páginas de faculdade
+ * - Componentes de matérias
+ * - Persistência localStorage
+ */
+export interface Materia {
+  id: string;
+  codigo: string;
+  nome: string;
+  professor: string;
+  titulacao: string;
+  cargaHoraria: number;
+  grau: number | null;
+  status: MateriaStatus;
+  periodo: string;
+  situacao: string;
+}
+
+/**
+ * MateriaStats: Estatísticas das matérias
+ */
+export interface MateriaStats {
+  total: number;
+  concluidas: number;
+  cursando: number;
+  faltaCursar: number;
+  mediaNota: number;
+  cargaHorariaConcluida: number;
+  cargaHorariaTotal: number;
+  progresso: number; // Percentual de conclusão
+}
+
+/**
+ * Exam: Tipo para Provas e Simulados
+ */
+export interface Exam {
+  id: string;
+  userId: string;
+  materia: string;
+  examDate: string; // ISO timestamp
+  examTime?: string | null; // horário em texto, ex: '14:00'
+  location?: string | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Manter compatibilidade com código existente
+export interface Subject {
+  id: string;
+  code?: string;
+  name?: string;
+  period?: string;
+  hours?: number;
+  grade?: number;
+  teacher?: string;
+  status?: string;
+  // Campos adicionais para compatibilidade
+  credits?: number;
+  semester?: number;
+}

@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
   Suspense,
 } from 'react';
 import { getJobs, deleteJob, updateJob } from '@/lib/api';
@@ -17,6 +18,7 @@ import JobsSearchAndEmpty from '@/components/jobs/JobsSearchAndEmpty';
 import JobCard from '@/components/jobs/JobCard';
 import JobEditModal from '@/components/jobs/JobEditModal';
 import Loading from '@/components/ui/loading';
+import Pagination from '@/components/ui/pagination';
 
 // ========================================
 // INTERFACES E TIPOS
@@ -40,7 +42,9 @@ const JobsPageContent = () => {
   const { addToast } = useToast();
   const { confirm } = useConfirmation();
 
-  const statusFilter = searchParams ? (searchParams.get('status') as JobStatus | undefined) : undefined;
+  const statusFilter = searchParams
+    ? (searchParams.get('status') as JobStatus | undefined)
+    : undefined;
 
   const [jobsState, setJobsState] = useState<JobsState>({
     jobs: [],
@@ -145,9 +149,8 @@ const JobsPageContent = () => {
           title: 'Status atualizado',
           description: `Status da vaga alterado para "${getStatusLabel(newStatus)}"`,
         });
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Erro ao atualizar status:', error);
+      } catch {
+        // Error logging removed for production
         addToast({
           type: 'error',
           title: 'Erro ao atualizar status',
@@ -184,9 +187,8 @@ const JobsPageContent = () => {
               ? `A vaga "${jobTitle}" foi removida do histórico com sucesso.`
               : `A vaga "${jobTitle}" foi excluída com sucesso.`,
           });
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('Erro ao excluir vaga:', error);
+        } catch {
+          // Error logging removed for production
           addToast({
             type: 'error',
             title: isRejected
@@ -232,9 +234,8 @@ const JobsPageContent = () => {
         title: 'Vaga atualizada',
         description: `A vaga "${editModalState.editFormData.title}" foi atualizada com sucesso.`,
       });
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Erro ao atualizar vaga:', error);
+    } catch {
+      // Error logging removed for production
       addToast({
         type: 'error',
         title: 'Erro ao atualizar vaga',
@@ -268,26 +269,56 @@ const JobsPageContent = () => {
   }, []);
 
   const filteredJobs = useMemo(() => {
-    return filterJobs(
-      jobsState.jobs,
-      jobsState.searchTerm,
-      statusFilter
-    );
+    return filterJobs(jobsState.jobs, jobsState.searchTerm, statusFilter);
   }, [jobsState.jobs, jobsState.searchTerm, statusFilter, filterJobs]);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 12; // fixed page size as requested
+
+  // Page transition state (fade out -> switch page -> fade in)
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const transitionTimeoutRef = useRef<number | null>(null);
+
+  const handlePageChange = useCallback(
+    (p: number) => {
+      if (p === currentPage) return;
+      // start fade out
+      setIsFadingOut(true);
+      // after fade-out, change page and trigger fade-in
+      if (transitionTimeoutRef.current) {
+        window.clearTimeout(transitionTimeoutRef.current);
+      }
+      transitionTimeoutRef.current = window.setTimeout(() => {
+        setCurrentPage(p);
+        // small delay to ensure new content is mounted, then fade in
+        transitionTimeoutRef.current = window.setTimeout(() => {
+          setIsFadingOut(false);
+        }, 30);
+      }, 300);
+    },
+    [currentPage]
+  );
+
+  const totalItems = filteredJobs.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+  const pagedJobs = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredJobs.slice(start, start + pageSize);
+  }, [filteredJobs, currentPage]);
 
   const totalJobs = useMemo(() => jobsState.jobs.length, [jobsState.jobs]);
 
   const searchTerm = jobsState.searchTerm;
   const loading = jobsState.loading;
   const expandedCards = jobsState.expandedCards;
-  const jobs = jobsState.jobs;
-
+  // const jobs = jobsState.jobs; // unused, filteredJobs/pagedJobs used instead
   const setSearchTerm = handleSearchTermChange;
   const editingJob = editModalState.editingJob;
   const editFormData = editModalState.editFormData;
   const isEditModalOpen = editModalState.isOpen;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const setEditFormData = useCallback((data: any) => {
+  const setEditFormData = useCallback((data: Partial<Job>) => {
     setEditModalState(prev => ({ ...prev, editFormData: data }));
   }, []);
 
@@ -307,24 +338,37 @@ const JobsPageContent = () => {
       <JobsSearchAndEmpty
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        hasJobs={jobs.length > 0}
         filteredJobsCount={filteredJobs.length}
       />
 
       {filteredJobs.length > 0 && (
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4'>
-          {filteredJobs.map(job => (
-            <JobCard
-              key={job.id}
-              job={job}
-              isExpanded={expandedCards.has(job.id)}
-              onToggleCard={toggleCard}
-              onStatusChange={handleStatusChange}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+        <>
+          <div
+            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 transition-all duration-300 ease-in-out ${
+              isFadingOut ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'
+            }`}
+          >
+            {pagedJobs.map(job => (
+              <JobCard
+                key={job.id}
+                job={job}
+                isExpanded={expandedCards.has(job.id)}
+                onToggleCard={toggleCard}
+                onStatusChange={handleStatusChange}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
+            totalItems={totalItems}
+          />
+        </>
       )}
 
       <JobEditModal
@@ -349,5 +393,4 @@ const JobsPage = () => {
   );
 };
 
-// eslint-disable-next-line prettier/prettier
 export default JobsPage;

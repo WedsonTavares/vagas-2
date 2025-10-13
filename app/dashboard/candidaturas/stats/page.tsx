@@ -36,32 +36,6 @@ import { JobStats } from '@/types';
 // TIPOS PARA COMPATIBILIDADE
 // ========================================
 
-/**
- * ApiJobStats: Tipo temporário para compatibilidade com API atual
- *
- * Por que necessário:
- * - API retorna status como string
- * - Tipos novos esperam JobStatus enum
- * - Evita quebrar a aplicação durante transição
- * - Permite evolução gradual da tipagem
- *
- * TODO: Remover quando API for atualizada para usar enums
- */
-interface ApiJobStats {
-  total: number;
-  byStatus: Record<string, number>; // API retorna string keys
-  byType: Record<string, number>;
-  byMode: Record<string, number>;
-  recentApplications: number;
-  recentJobs: Array<{
-    id: string;
-    title: string;
-    company: string;
-    status: string; // API retorna string
-    createdAt: string;
-  }>;
-}
-
 const StatsPage = () => {
   const router = useRouter();
   const { addToast } = useToast();
@@ -76,7 +50,7 @@ const StatsPage = () => {
    * - loading: Indicador de carregamento
    * - error: Mensagem de erro específica (melhor UX que boolean)
    */
-  const [stats, setStats] = useState<ApiJobStats | null>(null);
+  const [stats, setStats] = useState<JobStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,11 +84,12 @@ const StatsPage = () => {
       setLoading(true);
       setError(null); // Limpa erros anteriores
       const data = await getJobStats(); // API com cache automático
-      setStats(data);
+      // Cast do tipo da API para JobStats (compatibilidade com strings vs enums)
+      setStats(data as JobStats);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro desconhecido';
-      console.error('Erro ao carregar estatísticas:', error);
+      // Error logging removed for production
       setError(errorMessage);
       addToast({
         type: 'error',

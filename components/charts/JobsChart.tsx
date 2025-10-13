@@ -23,13 +23,11 @@ import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { prepareChartData } from '@/utils/jobUtils';
 
+import { JobStats } from '@/types';
+
 // ========================================
 // INTERFACES E TIPOS
 // ========================================
-
-interface JobStats {
-  byStatus: Record<string, number>;
-}
 
 interface JobsChartProps {
   stats: JobStats;
@@ -80,7 +78,7 @@ const JobsChart: React.FC<JobsChartProps> = ({ stats }) => {
    * - Pluralização automática (vaga/vagas)
    */
   const tooltipFormatter = useMemo(
-    () => (value: any, name: any) => {
+    () => (value: number, name: string) => {
       const item = chartData.find(item => item.name === name);
       if (!item) return [value];
 
@@ -110,7 +108,7 @@ const JobsChart: React.FC<JobsChartProps> = ({ stats }) => {
    */
   if (total === 0) {
     return (
-      <div className='bg-[color:var(--color-card)] p-6 rounded-xl border border-[color:var(--color-border)] h-full flex items-center justify-center'>
+      <div className='p-6 h-full flex items-center justify-center'>
         <div className='text-center'>
           <div className='text-4xl mb-2'>📊</div>
           <p className='text-[color:var(--color-muted-foreground)]'>
@@ -126,7 +124,7 @@ const JobsChart: React.FC<JobsChartProps> = ({ stats }) => {
   // ========================================
 
   return (
-  <div className={`bg-[color:var(--color-card)] p-4 rounded-xl border border-[color:var(--color-border)] h-full max-w-80`}>
+    <div className='p-4 h-full w-full'>
       {/* Header com informações */}
       <div className='mb-4'>
         <h3 className='text-lg font-semibold text-[color:var(--color-card-foreground)]'>
@@ -137,8 +135,8 @@ const JobsChart: React.FC<JobsChartProps> = ({ stats }) => {
         </p>
       </div>
 
-  {/* Container do gráfico com altura reduzida */}
-  <div className='h-36'>
+      {/* Container do gráfico com altura reduzida */}
+      <div className='h-36'>
         <ResponsiveContainer width='100%' height='100%'>
           <PieChart>
             <Pie
@@ -154,7 +152,7 @@ const JobsChart: React.FC<JobsChartProps> = ({ stats }) => {
               strokeWidth={2}
             >
               {/* Renderizar cada segmento com cor específica */}
-              {chartData.map((entry, index) => (
+              {chartData.map(entry => (
                 <Cell
                   key={`cell-${entry.status}`} // Chave única baseada em status
                   fill={entry.color} // Cor do segmento

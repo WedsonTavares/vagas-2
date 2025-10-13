@@ -282,9 +282,11 @@ function applyEnvironmentAdjustments(config: RateLimitConfig): RateLimitConfig {
  * @returns Chave personalizada
  */
 export function createCustomKey(req: Request, endpoint: string): string {
-  const ip = (req as any).headers?.get?.('x-forwarded-for') || '127.0.0.1';
-  const userAgent =
-    (req as any).headers?.get?.('user-agent')?.slice(0, 50) || 'unknown';
+  // Request.headers is available on the standard Request object in the runtime
+  // Use optional chaining and coalescing to avoid `any` casts and satisfy TS
+  const headers = (req as Request & { headers?: Headers }).headers;
+  const ip = headers?.get('x-forwarded-for') || '127.0.0.1';
+  const userAgent = headers?.get('user-agent')?.slice(0, 50) || 'unknown';
 
   return `${endpoint}:${ip}:${userAgent}`;
 }

@@ -276,12 +276,12 @@ const AddJobPageOptimized = () => {
           description: `A vaga "${formData.title}" foi adicionada à sua lista.`,
         });
 
-        router.push('/dashboard/jobs');
-      } catch (error: any) {
-        console.error('Erro ao criar vaga:', error);
-
+  router.push('/dashboard/candidaturas/jobs');
+      } catch (error: unknown) {
+        // Removido console.error para produção
+        
         // Tratamento específico por tipo de erro
-        const errorMessage = error.message || 'Erro desconhecido';
+        const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
 
         if (errorMessage.includes('já se candidatou')) {
           addToast({
@@ -322,7 +322,7 @@ const AddJobPageOptimized = () => {
    * Simples mas memoizado para consistência
    */
   const handleCancel = useCallback(() => {
-    router.push('/dashboard/jobs');
+  router.push('/dashboard/candidaturas/jobs');
   }, [router]);
 
   // ========================================

@@ -1,32 +1,114 @@
-import { AppWindow, AreaChart, Layers } from 'lucide-react';
+import { 
+  AreaChart,
+  Briefcase, 
+  FileText, 
+  BookOpen, 
+  Play, 
+  Clock, 
+  CheckCircle, 
+  Award, 
+  GraduationCap,
+  Target 
+} from 'lucide-react';
 
 type NavLink = {
-  href: string;
+  href?: string;
   label: string;
   icon: React.ReactNode;
+  children?: Array<NavLink>;
 };
-
 
 const links: Array<NavLink> = [
   {
-    href: '/dashboard/goals',
-    label: 'Metas Diárias',
+    href: '/dashboard/metas',
+    label: 'Dashboard',
     icon: <AreaChart size={16} />,
   },
   {
-    href: '/dashboard/add-job',
-    label: 'Adicionar Vaga',
-    icon: <Layers size={16} />,
-  },
-  {
-    href: '/dashboard/jobs',
     label: 'Candidaturas',
-    icon: <AppWindow size={16} />,
+    icon: <Briefcase size={16} />,
+    children: [
+      {
+        href: '/dashboard/candidaturas/stats',
+        label: 'Status',
+        icon: <AreaChart size={16} />,
+      },
+      {
+        href: '/dashboard/candidaturas/jobs',
+        label: 'Minhas Candidaturas',
+        icon: <FileText size={16} />,
+      },
+    ],
   },
   {
-    href: '/dashboard/stats',
-    label: 'Status das Candidaturas',
-    icon: <AreaChart size={16} />,
+    href: '/dashboard/cursos',
+    label: 'Cursos +',
+    icon: <BookOpen size={16} />,
+    children: [
+      {
+        href: '/dashboard/cursos/andamento',
+        label: 'Em Andamento',
+        icon: <Play size={16} />,
+      },
+      {
+        href: '/dashboard/cursos/pendentes',
+        label: 'Em Pendentes',
+        icon: <Clock size={16} />,
+      },
+      {
+        href: '/dashboard/cursos/completos',
+        label: 'Completos',
+        icon: <CheckCircle size={16} />,
+      },
+      {
+        href: '/dashboard/cursos/certificados',
+        label: 'Certificados',
+        icon: <Award size={16} />,
+      }
+    ],
+  },
+  {
+    label: 'Faculdade',
+    icon: <GraduationCap size={16} />,
+    children: [
+      {
+        href: '/dashboard/faculdade/materias/estatisticas',
+        label: 'Estatísticas',
+        icon: <AreaChart size={16} />,
+      },
+      {
+        href: '/dashboard/faculdade/provas',
+        label: 'Provas e Simulados',
+        icon: <FileText size={16} />,
+      },
+      {
+        href: '/dashboard/faculdade/materias',
+        label: 'Matérias',
+        icon: <BookOpen size={16} />,
+        children: [
+          {
+            href: '/dashboard/faculdade/materias/concluidas',
+            label: 'Concluídas',
+            icon: <CheckCircle size={16} />,
+          },
+          {
+            href: '/dashboard/faculdade/materias/cursando',
+            label: 'Cursando',
+            icon: <Play size={16} />,
+          },
+          {
+            href: '/dashboard/faculdade/materias/falta-cursar',
+            label: 'Falta Cursar',
+            icon: <Clock size={16} />,
+          }
+        ]
+      },
+    ],
+  },
+  {
+    href: '/dashboard/objetivos',
+    label: 'Objetivos',
+    icon: <Target size={16} />,
   },
 ];
 

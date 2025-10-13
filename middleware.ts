@@ -8,6 +8,9 @@ const publicRoutes = createRouteMatcher([
   '/', // landing page
   '/sign-in(.*)', // rotas de sign-in (e sub-rotas)
   '/sign-up(.*)', // rotas de sign-up
+  // também permitir as rotas dentro da pasta /login (ex: /login/sign-in)
+  '/login/sign-in(.*)',
+  '/login/sign-up(.*)',
   '/_next(.*)', // recursos estáticos do Next
   '/favicon.ico', // favicon
 ]);
@@ -40,8 +43,10 @@ export default clerkMiddleware(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
 
-      // Para páginas, redirecionar para sign-in
-      const signInUrl = new URL('/sign-in', req.url);
+      // Para páginas, redirecionar para sign-in — usar a URL configurada em env, se existir
+      const signInPath =
+        process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || '/sign-in';
+      const signInUrl = new URL(signInPath, req.url);
       signInUrl.searchParams.set('redirect_url', req.url);
       return NextResponse.redirect(signInUrl);
     }

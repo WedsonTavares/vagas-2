@@ -30,7 +30,7 @@ const JobsHeader: React.FC<JobsHeaderProps> = ({
   };
 
   const clearFilters = () => {
-    router.push('/dashboard/jobs');
+    router.push('/dashboard/candidaturas/jobs');
   };
 
   return (
@@ -72,7 +72,7 @@ const JobsHeader: React.FC<JobsHeaderProps> = ({
         </div>
       </div>
       <Button
-        onClick={() => router.push('/dashboard/add-job')}
+        onClick={() => router.push('/dashboard/candidaturas/add-job')}
         className='bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:var(--color-primary)]/90'
       >
         + Nova Vaga

@@ -53,13 +53,7 @@ const GoalsPage = () => {
               {todayApplications}
             </span>
             <span className='text-lg'>/ {dailyGoal} vagas</span>
-            <span
-              className={`ml-2 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 ${
-                todayApplications >= dailyGoal
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-yellow-100 text-yellow-700'
-              }`}
-            >
+            <span className="ml-2 text-sm font-medium flex items-center gap-2">
               {todayApplications >= dailyGoal ? (
                 <span className='inline-flex items-center gap-1'>
                   <svg width='18' height='18' viewBox='0 0 20 20' fill='none'>
@@ -100,16 +94,10 @@ const GoalsPage = () => {
               {todayStudies}
             </span>
             <span className='text-lg'>/ {studyGoal} estudos</span>
-            <span
-              className={`ml-2 px-3 py-1 rounded-full text-sm font-medium ${
-                todayStudies >= studyGoal
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-yellow-100 text-yellow-700'
-              }`}
-            >
+            <span className="ml-2 text-sm font-medium">
               {todayStudies >= studyGoal
                 ? 'Meta de estudos atingida!'
-                : 'Estude mais hoje!'}
+                : <span className="text-blue-600">Estude mais hoje!</span>}
             </span>
           </div>
         </div>

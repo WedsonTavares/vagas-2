@@ -1,10 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import {
-  supabaseBackend,
-  validateUserId,
-  executeSecureQuery,
-} from '@/lib/supabase-backend';
+import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supabase-backend';
+
+// Tipagens locais apenas para clareza (mantém a lógica original)
+interface ExamRow {
+  id: string;
+  userid: string;
+  materia: string;
+  examdate: string;
+  examtime?: string | null;
+  location?: string | null;
+  notes?: string | null;
+  createdat?: string;
+  updatedat?: string;
+}
+
+interface CreateExamBody {
+  materia: string;
+  examDate: string;
+  examTime?: string;
+  location?: string;
+  notes?: string;
+}
 
 /**
  * GET /api/faculdade/provas - Lista as provas do usuário
@@ -28,32 +45,28 @@ export async function GET(request: NextRequest) {
       query = query.gte('examdate', new Date().toISOString());
     }
 
-    const result = await executeSecureQuery(
-      query.order('examdate', { ascending: true }),
-      'GET /faculdade/provas - List user exams',
-      userId
-    );
+    const result = await executeSecureQuery(query.order('examdate', { ascending: true }), 'GET /faculdade/provas - List user exams', userId);
 
     if (result.error) {
       return NextResponse.json({ error: result.error.message }, { status: 500 });
     }
 
-    const rows = result.data || [];
-    // map to camelCase
-    const mapped = (rows as any[]).map(row => ({
+    const rows = (result.data || []) as ExamRow[];
+    // mapeia para camelCase (contrato do frontend)
+    const mapped = rows.map((row) => ({
       id: row.id,
       userId: row.userid,
       materia: row.materia,
       examDate: row.examdate,
-      examTime: row.examtime,
-      location: row.location,
-      notes: row.notes,
-      createdAt: row.createdat,
-      updatedAt: row.updatedat,
+      examTime: row.examtime ?? null,
+      location: row.location ?? null,
+      notes: row.notes ?? null,
+      createdAt: row.createdat ?? null,
+      updatedAt: row.updatedat ?? null,
     }));
 
     return NextResponse.json(mapped);
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -66,9 +79,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-
-    const { materia, examDate, examTime, location, notes } = body;
+  const body = (await request.json()) as CreateExamBody;
+  const { materia, examDate, examTime, location, notes } = body;
 
     if (!materia || !examDate) {
       return NextResponse.json({ error: 'Campos obrigatórios: materia, examDate' }, { status: 400 });
@@ -96,21 +108,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Map DB response (lowercase columns) to camelCase for the frontend
-    const row = result.data as any;
+    const row = result.data as ExamRow;
     const mapped = {
       id: row.id,
       userId: row.userid,
       materia: row.materia,
       examDate: row.examdate,
-      examTime: row.examtime,
-      location: row.location,
-      notes: row.notes,
-      createdAt: row.createdat,
-      updatedAt: row.updatedat,
+      examTime: row.examtime ?? null,
+      location: row.location ?? null,
+      notes: row.notes ?? null,
+      createdAt: row.createdat ?? null,
+      updatedAt: row.updatedat ?? null,
     };
 
     return NextResponse.json(mapped, { status: 201 });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

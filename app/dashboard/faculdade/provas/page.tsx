@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useConfirmation } from '@/components/ui/confirmation';
@@ -26,7 +26,7 @@ export default function ProvasPage() {
   const { confirm } = useConfirmation();
   const { addToast } = useToast();
 
-  const fetchExams = async () => {
+  const fetchExams = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/faculdade/provas');
@@ -34,15 +34,19 @@ export default function ProvasPage() {
       const data = await res.json();
       setExams(data || []);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
+      addToast({ type: 'error', title: 'Falha ao carregar provas' });
     } finally {
       setLoading(false);
     }
-  };
+  }, [addToast]);
 
   useEffect(() => {
     fetchExams();
-  }, []);
+  }, [fetchExams]);
+
+  const [showForm, setShowForm] = useState(false);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +73,10 @@ export default function ProvasPage() {
       setExamTime('');
       setLocation('');
       setNotes('');
+      setShowForm(false);
+      addToast({ type: 'success', title: 'Prova adicionada' });
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       addToast({ type: 'error', title: (err as Error).message || 'Erro' });
     } finally {
@@ -101,7 +108,9 @@ export default function ProvasPage() {
         throw new Error(err?.error || 'Erro ao excluir prova');
       }
       await fetchExams();
+      addToast({ type: 'success', title: 'Prova excluída' });
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       addToast({ type: 'error', title: (err as Error).message || 'Erro ao excluir prova' });
     }
@@ -136,7 +145,9 @@ export default function ProvasPage() {
       await fetchExams();
       setIsCompleteModalOpen(false);
       setCompletingExamId(null);
+      addToast({ type: 'success', title: 'Prova finalizada' });
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       addToast({ type: 'error', title: (err as Error).message || 'Erro' });
     }
@@ -156,7 +167,14 @@ export default function ProvasPage() {
         </div>
       </div>
 
-      {/* Formulário de criação */}
+      <div className="mb-4 flex justify-end">
+        <Button onClick={() => setShowForm((s) => !s)} variant="outline">
+          {showForm ? 'Cancelar' : 'Adicionar Prova'}
+        </Button>
+      </div>
+
+      {/* Formulário de criação (toggle) */}
+      {showForm && (
       <form onSubmit={handleCreate} className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] mb-6 grid grid-cols-1 md:grid-cols-3 gap-3">
         <input
           value={materia}
@@ -192,6 +210,7 @@ export default function ProvasPage() {
           <Button type="submit" className="bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)]" disabled={saving}>{saving ? 'Salvando...' : 'Adicionar Prova'}</Button>
         </div>
       </form>
+      )}
 
       {/* Lista */}
       {loading ? (

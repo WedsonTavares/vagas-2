@@ -1,58 +1,97 @@
-import React from 'react';
+
+
+
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { notFound } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
+import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supabase-backend';
+import { ExpansiveCard } from '@/components/certificados/ExpansiveCard';
+import type { Certificate } from '@/types';
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
+// Tipagem local alinhada à tabela do banco
+interface CertificateRow {
+  id: string;
+  userid: string;
+  course_name: string;
+  duration?: string | null;
+  description?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  institution?: string | null;
+  file_name?: string | null;
+  storage_path?: string | null;
+  file_mime?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 export default async function CertificatePreview({ params }: Props) {
   const { id } = await params;
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('/rest/v1', '') || ''}/api/cursos/certificados/${id}`, {
-      method: 'GET',
-      // force server fetch
-      cache: 'no-store',
-      headers: { 'content-type': 'application/json' },
-    });
 
-    if (!res.ok) {
-      // couldn't fetch metadata
-      return notFound();
-    }
+  // Autenticação via Clerk
+  const { userId } = await auth();
+  if (!userId || !validateUserId(userId)) {
+    return notFound();
+  }
 
-    const data = await res.json();
-    const signedUrl = data?.signedUrl || null;
-    const fileName = data?.fileName || 'certificate';
+  // Busca direta no Supabase (evita problemas de cookies/SSR)
+  const result = await executeSecureQuery(
+    supabaseBackend
+      .from('certificates')
+      .select('*')
+      .eq('id', id)
+      .eq('userid', userId)
+      .maybeSingle(),
+    `SSR /dashboard/cursos/certificados/${id}`,
+    userId
+  );
 
-    // prefer signedUrl; fallback to download route
-    const src = signedUrl || `/api/cursos/certificados/${id}/download`;
+  if (result.error || !result.data) {
+    return notFound();
+  }
+
+  const r = result.data as CertificateRow;
+  const data: Certificate = {
+    id: r.id,
+    userId: r.userid,
+    courseName: r.course_name,
+    duration: r.duration,
+    description: r.description,
+    startDate: r.start_date,
+    endDate: r.end_date,
+    institution: r.institution ?? undefined,
+    fileName: r.file_name,
+    storagePath: r.storage_path,
+    fileMime: r.file_mime,
+    createdAt: r.created_at ?? null,
+    updatedAt: r.updated_at ?? null,
+  };
 
     return (
-      <main className="max-w-6xl mx-auto p-4">
-        <div className="flex items-center justify-between mb-4">
+      <main className="max-w-2xl mx-auto p-4">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">{data?.courseName || 'Certificado'}</h1>
-            <p className="text-sm text-[color:var(--color-muted-foreground)]">{data?.institution || ''}</p>
+            <h1 className="text-3xl font-bold text-primary mb-1">{data?.courseName || 'Certificado'}</h1>
+            <p className="text-base text-muted-foreground">{data?.institution || ''}</p>
           </div>
           <div className="flex gap-2">
             <Link href="/dashboard/cursos/certificados">
-              <Button variant="ghost">Voltar</Button>
+              <Button variant="outline" size="sm">Voltar</Button>
             </Link>
             <a href={`/api/cursos/certificados/${id}/download`}>
-              <Button>Baixar</Button>
+              <Button size="sm" variant="default">Baixar</Button>
             </a>
           </div>
         </div>
 
-        <div className="border rounded h-[80vh] overflow-hidden">
-          <iframe src={src} title={fileName} className="w-full h-full" />
-        </div>
+        <ExpansiveCard data={data} />
       </main>
     );
-  } catch (err) {
-    console.error(err);
-    return notFound();
-  }
 }
+
+// ...ExpansiveCard agora importado do componente client-only

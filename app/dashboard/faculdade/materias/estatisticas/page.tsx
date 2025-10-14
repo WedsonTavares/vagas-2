@@ -27,6 +27,7 @@ export default function MateriasEstatisticasPage() {
         const data = await res.json();
         setExams(data || []);
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error(err);
         setExams([]);
       } finally {

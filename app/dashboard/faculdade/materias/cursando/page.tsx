@@ -40,6 +40,15 @@ export default function MateriasCursandoPage() {
     [currentPage]
   );
 
+  // Cleanup de timeouts ao desmontar para evitar vazamento de memória
+  useEffect(() => {
+    return () => {
+      if (transitionTimeoutRef.current) {
+        window.clearTimeout(transitionTimeoutRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const materiasCarregadas = materiasData as Materia[];
     const materiasCursando = materiasCarregadas.filter(

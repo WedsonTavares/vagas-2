@@ -23,21 +23,28 @@ export default function AddCertificate() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!courseName || !file) {
-      addToast({ type: 'error', title: 'Preencha nome do curso e selecione o arquivo' });
+      addToast({ type: 'error', title: 'Preencha os campos obrigatórios e selecione o arquivo' });
       return;
     }
     setSaving(true);
 
     try {
-  const form = new FormData();
+      const form = new FormData();
       form.append('courseName', courseName);
       form.append('duration', duration);
       form.append('description', description);
-      form.append('startDate', startDate);
-      form.append('endDate', endDate);
+      // Normaliza datas para formato ISO (YYYY-MM-DD) sem timezone
+      const normalizeDate = (d: string) => {
+        if (!d) return '';
+        // Garante que não haja timezone
+        const [year, month, day] = d.split('-');
+        return `${year}-${month}-${day}`;
+      };
+      form.append('startDate', normalizeDate(startDate));
+      form.append('endDate', normalizeDate(endDate));
       form.append('institution', institution);
       form.append('file', file);
-  if (previewBlob) form.append('preview', previewBlob, 'preview.png');
+      if (previewBlob) form.append('preview', previewBlob, 'preview.png');
 
       const res = await fetch('/api/cursos/certificados', {
         method: 'POST',
@@ -53,6 +60,7 @@ export default function AddCertificate() {
       // redirect back
       window.location.href = '/dashboard/cursos/certificados';
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
       addToast({ type: 'error', title: (err as Error).message || 'Erro' });
     } finally {
@@ -111,12 +119,11 @@ export default function AddCertificate() {
                   setPreviewBlob(null);
                   setPreviewUrl(null);
                   if (f.type === 'application/pdf') {
-                    // dynamic import of pdfjs-dist workerless build
-                    // @ts-expect-error dynamic import may lack types in this environment
-                    const pdfjs: any = await import('pdfjs-dist/legacy/build/pdf');
-                    // set worker src (non-typed global)
-                    (pdfjs as any).GlobalWorkerOptions = (pdfjs as any).GlobalWorkerOptions || {};
-                    ;(pdfjs as any).GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@2.16.105/legacy/build/pdf.worker.min.js';
+                    // Tipagem para pdfjs-dist
+                    const pdfjs: typeof import('pdfjs-dist/legacy/build/pdf') = await import('pdfjs-dist/legacy/build/pdf');
+                    // @ts-expect-error: GlobalWorkerOptions não tipado corretamente
+                    pdfjs.GlobalWorkerOptions = pdfjs.GlobalWorkerOptions || {};
+                    pdfjs.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@2.16.105/legacy/build/pdf.worker.min.js';
                     const arrayBuffer = await f.arrayBuffer();
                     const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
                     const page = await pdf.getPage(1);
@@ -143,6 +150,7 @@ export default function AddCertificate() {
                     }
                   }
                 } catch (err) {
+                  // eslint-disable-next-line no-console
                   console.warn('preview generation failed', err);
                 }
               })();
@@ -163,15 +171,10 @@ export default function AddCertificate() {
                 setFileError('Preview muito grande. Máx 2 MB.');
                 return;
               }
-              // set as preview blob
               setPreviewBlob(pf);
               setPreviewUrl(URL.createObjectURL(pf));
             }}
           />
-
-          <Button type="button" onClick={() => previewInputRef.current?.click()} className="ml-2">
-            {previewUrl ? 'Trocar imagem' : 'Adicionar imagem de pré-visualização'}
-          </Button>
 
           <Button
             type="button"
@@ -187,8 +190,9 @@ export default function AddCertificate() {
         {fileError && <div className="text-sm text-red-600 mt-1">{fileError}</div>}
         {previewUrl && (
           <div className="mt-3">
-            <div className="text-sm text-[color:var(--color-muted-foreground)] mb-1">Pré-visualização</div>
-            <img src={previewUrl} alt="preview" className="max-w-xs border rounded" />
+            {/* Apenas a imagem de preview, sem borda extra ou microcard */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={previewUrl} alt="Pré-visualização do certificado" className="max-w-xs rounded" />
           </div>
         )}
         <div className="flex justify-end">

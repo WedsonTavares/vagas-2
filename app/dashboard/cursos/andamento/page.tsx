@@ -1,12 +1,12 @@
 import React from 'react';
 
-const emAndamento = () => {
+const EmAndamento = () => {
   return (
     <div>
-      <h1>Em </h1>
+      <h1>Em Andamento</h1>
       <p>Lista de Em Andamento.</p>
     </div>
   );
 };
 
-export default emAndamento ;
+export default EmAndamento;

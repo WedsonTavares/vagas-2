@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import {
-  supabaseBackend,
-  validateUserId,
-  executeSecureQuery,
-} from '@/lib/supabase-backend';
+import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supabase-backend';
+
+interface ExamRow {
+  id: string;
+  userid: string;
+  materia: string;
+  examdate: string;
+  examtime?: string | null;
+  location?: string | null;
+  notes?: string | null;
+  createdat?: string;
+  updatedat?: string;
+}
 
 export async function GET(
   request: NextRequest,
@@ -32,8 +40,8 @@ export async function GET(
       return NextResponse.json({ error: 'Prova não encontrada' }, { status: 404 });
     }
 
-    return NextResponse.json(result.data);
-  } catch (err) {
+    return NextResponse.json(result.data as ExamRow);
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -50,7 +58,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+  const body = await request.json();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, userId: __, createdAt: ___, ...updateData } = body;
     updateData.updatedAt = new Date().toISOString();
@@ -66,7 +74,7 @@ export async function PUT(
     }
 
     // Map updateData keys to DB column names if necessary
-    const dbUpdate: any = {};
+  const dbUpdate: Record<string, unknown> = {};
     if (updateData.materia !== undefined) dbUpdate.materia = updateData.materia;
     if (updateData.examDate !== undefined) dbUpdate.examdate = updateData.examDate;
     if (updateData.examTime !== undefined) dbUpdate.examtime = updateData.examTime;
@@ -84,8 +92,8 @@ export async function PUT(
       return NextResponse.json({ error: result.error.message }, { status: 500 });
     }
 
-    return NextResponse.json(result.data);
-  } catch (err) {
+    return NextResponse.json(result.data as ExamRow);
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -123,7 +131,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true, message: 'Prova excluída com sucesso' });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

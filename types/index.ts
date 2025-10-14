@@ -202,3 +202,24 @@ export interface Subject {
   credits?: number;
   semester?: number;
 }
+
+// ========================================
+// TIPOS PARA CURSOS (CERTIFICADOS)
+// ========================================
+
+export interface Certificate {
+  id: string;
+  courseName: string;
+  institution?: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  duration?: string | null;
+  fileName?: string | null;
+  previewUrl?: string | null;
+  userId?: string;
+  storagePath?: string | null;
+  fileMime?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  description?: string | null;
+}

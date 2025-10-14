@@ -40,6 +40,15 @@ export default function MateriasConcluidasPage() {
     [currentPage]
   );
 
+  // Cleanup de timeouts ao desmontar
+  useEffect(() => {
+    return () => {
+      if (transitionTimeoutRef.current) {
+        window.clearTimeout(transitionTimeoutRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const materiasCarregadas = materiasData as Materia[];
     const materiasConcluidas = materiasCarregadas.filter(

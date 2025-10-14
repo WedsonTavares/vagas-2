@@ -41,6 +41,15 @@ export default function MateriasFaltaCursarPage() {
     [currentPage]
   );
 
+  // Cleanup de timeouts ao desmontar
+  useEffect(() => {
+    return () => {
+      if (transitionTimeoutRef.current) {
+        window.clearTimeout(transitionTimeoutRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const materiasCarregadas = materiasData as Materia[];
     const materiasFaltaCursar = materiasCarregadas.filter(
@@ -156,6 +165,7 @@ export default function MateriasFaltaCursarPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 pr-10 border border-[color:var(--color-border)] rounded-lg bg-[color:var(--color-card)] text-[color:var(--color-card-foreground)] placeholder-[color:var(--color-muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent"
+            aria-label="Buscar matérias"
           />
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             <svg className="h-5 w-5 text-[color:var(--color-muted-foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

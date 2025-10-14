@@ -4,7 +4,27 @@ import { supabaseBackend, validateUserId, executeSecureQuery } from '@/lib/supab
 
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+// Tipagens locais para evitar uso indiscriminado de `any` e deixar o código mais claro.
+interface CertificateRow {
+    id: string;
+    userid: string;
+    course_name: string;
+    duration?: string | null;
+    description?: string | null;
+    start_date?: string | null;
+    end_date?: string | null;
+    institution?: string | null;
+    file_name?: string | null;
+    storage_path?: string | null;
+    preview_path?: string | null;
+    file_mime?: string | null;
+    preview_mime?: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+}
+
+// Lista os certificados do usuário autenticado
+export async function GET() {
     try {
         const { userId } = await auth();
         if (!userId || !validateUserId(userId)) {
@@ -19,19 +39,19 @@ export async function GET(request: NextRequest) {
 
         if (result.error) return NextResponse.json({ error: result.error.message }, { status: 500 });
 
-        const rows = Array.isArray(result.data) ? result.data : [];
+        const rows = Array.isArray(result.data) ? (result.data as CertificateRow[]) : [];
 
-        // For each row, try to generate a signed URL for the preview if available
-        const mappedPromises = rows.map(async (r: any) => {
+        // Para cada registro, tentamos gerar uma URL assinada para o preview (se existir).
+        const mappedPromises = rows.map(async (r) => {
             let previewUrl: string | null = null;
-            try {
-                if (r.preview_path) {
-                    const { data: urlData, error: urlErr } = await supabaseBackend.storage.from('certificates').createSignedUrl(r.preview_path, 60 * 60);
-                    if (!urlErr && urlData?.signedURL) previewUrl = urlData.signedURL;
-                }
-            } catch (e) {
-                // ignore preview generation error
-            }
+                    try {
+                        if (r.preview_path) {
+                            const { data: urlData, error: urlErr } = await supabaseBackend.storage.from('certificates').createSignedUrl(r.preview_path, 60 * 60);
+                            if (!urlErr && urlData?.signedURL) previewUrl = urlData.signedURL;
+                        }
+                    } catch {
+                        // Erros na geração da URL de preview não impedem o retorno da lista; apenas ignoramos aqui.
+                    }
 
             return {
                 id: r.id,
@@ -54,13 +74,12 @@ export async function GET(request: NextRequest) {
         const mapped = await Promise.all(mappedPromises);
 
         return NextResponse.json(mapped);
-    } catch (err) {
+    } catch {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
 
-// Use native request.formData() to parse multipart uploads
-
+// Use native request.formData() para receber uploads multipart
 export async function POST(request: NextRequest) {
     try {
         const { userId } = await auth();
@@ -68,9 +87,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Accept JSON (metadata + pre-uploaded filePath) or multipart/form-data
+        // Aceita JSON (metadados + storagePath já existente) ou multipart/form-data
         const contentType = request.headers.get('content-type') || '';
-        let fields: any = {};
+        let fields: Record<string, unknown> = {};
         let fileBuffer: Buffer | null = null;
         let originalFileName = '';
         let mimeType = '';
@@ -81,34 +100,33 @@ export async function POST(request: NextRequest) {
         if (contentType.includes('application/json')) {
             const body = await request.json();
             fields = body;
-            // Expect fields.storagePath to exist if file already uploaded to storage
         } else if (contentType.includes('multipart/form-data')) {
-            // Use native formData parsing
+            // parsing nativo do formData
             const formData = await request.formData();
             for (const [key, value] of formData.entries()) {
-              // files will have arrayBuffer() method
-              if (value && typeof (value as any).arrayBuffer === 'function') {
-                    const buf = await (value as any).arrayBuffer();
-                    // differentiate preview vs main file
+                // arquivos possuem arrayBuffer()
+                if (value && typeof (value as File | Blob).arrayBuffer === 'function') {
+                    const fileValue = value as File | Blob;
+                    const buf = await fileValue.arrayBuffer();
+                    // diferencia preview do arquivo principal
                     if (key === 'preview') {
                         previewBuffer = Buffer.from(buf);
-                        previewOriginalName = (value as any).name || 'preview.png';
-                        previewMime = (value as any).type || 'image/png';
+                        previewOriginalName = (fileValue as File).name || 'preview.png';
+                        previewMime = (fileValue as File).type || 'image/png';
                     } else {
                         fileBuffer = Buffer.from(buf);
-                        // file name and mime
-                        originalFileName = (value as any).name || key || '';
-                        mimeType = (value as any).type || 'application/octet-stream';
+                        originalFileName = (fileValue as File).name || key || '';
+                        mimeType = (fileValue as File).type || 'application/octet-stream';
                     }
                 } else {
                     fields[key] = value;
                 }
             }
         } else {
-            // try parse as json
+            // tenta interpretar como json
             try {
                 fields = await request.json();
-            } catch (e) {
+            } catch {
                 return NextResponse.json({ error: 'Unsupported content type' }, { status: 400 });
             }
         }
@@ -121,50 +139,56 @@ export async function POST(request: NextRequest) {
             endDate,
             institution,
             storagePath,
-        } = fields;
+        } = fields as Record<string, string | undefined>;
 
         if (!courseName) {
             return NextResponse.json({ error: 'Campo obrigatório: courseName' }, { status: 400 });
         }
 
-        // handle file upload to supabase storage if provided as buffer
-        let finalStoragePath = storagePath || null;
+        // faz upload do arquivo principal caso recebido como buffer
+        let finalStoragePath = (storagePath as string) || null;
         let finalPreviewPath: string | null = null;
         if (fileBuffer) {
-            // create a safe filename using uuid and preserve extension
             const extMatch = originalFileName ? originalFileName.match(/(\.[a-zA-Z0-9]+)(?:\?.*)?$/) : null;
             const ext = extMatch ? extMatch[1] : '';
             const safeName = `${crypto.randomUUID()}${ext}`;
             const destPath = `certificates/${userId}/${safeName}`;
 
-            // Ensure bucket exists (attempt to create if missing). Using service role client so this should work.
+            // tenta garantir que o bucket existe, mas ignora erros de criação (pode já existir)
                     try {
-                        // createBucket may fail if permissions missing or bucket exists; ignore errors gracefully
-                        if (typeof (supabaseBackend.storage as any).createBucket === 'function') {
+                        // valida se o método createBucket existe no cliente
+                        // evita uso de `any` e protege em runtimes diferentes
+                        // Em algumas versões do cliente supabase, createBucket pode não existir — protegemos a chamada.
+                    if (typeof supabaseBackend.storage?.createBucket === 'function') {
                             try {
-                                await (supabaseBackend.storage as any).createBucket('certificates', { public: false });
-                            } catch (e) {
-                                // ignore inner error but log for debugging
-                                console.warn('createBucket inner warning:', e instanceof Error ? e.message : e);
+                                // criar bucket caso não exista (ignora erro se já existir)
+                                // marcamos como privado (public: false)
+                                // Em ambientes restritos, essa chamada pode falhar; tratamos abaixo
+                                // eslint-disable-next-line no-console
+                                await supabaseBackend.storage.createBucket('certificates', { public: false });
+                            } catch {
+                                // eslint-disable-next-line no-console
+                                console.warn('createBucket inner warning');
                             }
                         }
-                    } catch (e) {
-                        // log but continue — upload will show the real error if bucket truly missing
-                        console.warn('createBucket warning:', e instanceof Error ? e.message : e);
+                    } catch {
+                        // eslint-disable-next-line no-console
+                        console.warn('createBucket warning');
                     }
 
             const upload = await supabaseBackend.storage.from('certificates').upload(destPath, fileBuffer, {
                 contentType: mimeType,
                 upsert: false,
             });
-            if (upload.error) {
-                console.error('Supabase upload error:', upload.error.message);
-                return NextResponse.json({ error: upload.error.message }, { status: 500 });
-            }
+                    if (upload.error) {
+                        // eslint-disable-next-line no-console
+                        console.error('Supabase upload error:', upload.error.message);
+                        return NextResponse.json({ error: upload.error.message }, { status: 500 });
+                    }
             finalStoragePath = upload.data?.path || destPath;
         }
 
-        // upload preview if available
+        // upload do preview (se houver)
         if (previewBuffer) {
             const extMatch = previewOriginalName ? previewOriginalName.match(/(\.[a-zA-Z0-9]+)(?:\?.*)?$/) : null;
             const ext = extMatch ? extMatch[1] : '.png';
@@ -174,18 +198,20 @@ export async function POST(request: NextRequest) {
                 contentType: previewMime || 'image/png',
                 upsert: false,
             });
-            if (previewUpload.error) {
-                console.error('Supabase preview upload error:', previewUpload.error.message);
-            } else {
-                finalPreviewPath = previewUpload.data?.path || previewDest;
-            }
+                    if (previewUpload.error) {
+                        // eslint-disable-next-line no-console
+                        console.error('Supabase preview upload error:', previewUpload.error.message);
+                    } else {
+                        finalPreviewPath = previewUpload.data?.path || previewDest;
+                    }
         }
 
         if (!finalStoragePath) {
             return NextResponse.json({ error: 'Arquivo não fornecido' }, { status: 400 });
         }
 
-        const dbObj: any = {
+        // objeto para inserir no banco — tipado localmente para evitar `any`
+        const dbObj = {
             id: crypto.randomUUID(),
             userid: userId,
             course_name: courseName,
@@ -199,7 +225,7 @@ export async function POST(request: NextRequest) {
             preview_path: finalPreviewPath || null,
             preview_mime: previewMime || null,
             file_mime: mimeType || null,
-        };
+        } as const;
 
         const result = await executeSecureQuery(
             supabaseBackend.from('certificates').insert([dbObj]).select().maybeSingle(),
@@ -209,7 +235,7 @@ export async function POST(request: NextRequest) {
 
         if (result.error) return NextResponse.json({ error: result.error.message }, { status: 500 });
 
-        const r = result.data as any;
+        const r = result.data as CertificateRow;
         const mapped = {
             id: r.id,
             userId: r.userid,
@@ -227,8 +253,9 @@ export async function POST(request: NextRequest) {
         };
 
         return NextResponse.json(mapped, { status: 201 });
-    } catch (err) {
-        console.error(err);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-    }
+        } catch {
+            // eslint-disable-next-line no-console
+            console.error('Internal error in certificados route');
+            return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        }
 }

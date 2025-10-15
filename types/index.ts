@@ -234,6 +234,7 @@ export interface Objective {
   id: string;
   userId: string;
   name: string;
+  description?: string | null;
   startDate?: string | null;
   endDate?: string | null;
   status: 'concluido' | 'em_andamento' | 'futuro';

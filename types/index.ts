@@ -223,3 +223,40 @@ export interface Certificate {
   updatedAt?: string | null;
   description?: string | null;
 }
+
+
+// ========================================
+// TIPOS PARA OBJETIVOS (objectives(tabela), objective_checklists (checklist) e objective_histories (historico))
+// ========================================
+
+
+export interface Objective {
+  id: string;
+  userId: string;
+  name: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  status: 'concluido' | 'em_andamento' | 'futuro';
+  progress: number;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface ObjectiveChecklist {
+  id: string;
+  objectiveId: string;
+  title: string;
+  description?: string | null;
+  completed: boolean;
+  orderIndex?: number;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface ObjectiveHistory {
+  id: string;
+  objectiveId: string;
+  action: string;
+  details?: string | null;
+  createdAt?: string | null;
+}

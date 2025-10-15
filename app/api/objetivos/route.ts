@@ -102,8 +102,8 @@ export async function POST(request: NextRequest) {
     // Extrai e valida os dados do corpo da requisição
     const body = await request.json().catch(() => ({}));
     const name: string | undefined = typeof body?.name === 'string' ? body.name.trim() : undefined;
-    const startDate: string | undefined = typeof body?.startDate === 'string' ? body.startDate : undefined;
-    const endDate: string | undefined = typeof body?.endDate === 'string' ? body.endDate : undefined;
+  const startDate: string | undefined = typeof body?.startDate === 'string' ? body.startDate : undefined;
+  const endDate: string | undefined = typeof body?.endDate === 'string' ? body.endDate : undefined;
     const status: ObjectiveRow['status'] | undefined = body?.status;
 
     if (!name) return NextResponse.json({ error: 'Nome do objetivo é obrigatório' }, { status: 400 });

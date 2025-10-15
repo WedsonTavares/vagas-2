@@ -90,14 +90,14 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const name: string | undefined = typeof body?.name === 'string' ? body.name.trim() : undefined;
     const startDate: string | undefined = typeof body?.startDate === 'string' ? body.startDate : undefined;
     const endDate: string | undefined = typeof body?.endDate === 'string' ? body.endDate : undefined;
-    const status: ObjectiveRow['status'] | undefined = body?.status;
+  const status: ObjectiveRow['status'] | undefined = body?.status;
     const progress: number | undefined = typeof body?.progress === 'number' ? body.progress : undefined;
 
     const payload: Partial<ObjectiveRow> = {};
     if (name !== undefined) payload.name = name;
   if (startDate !== undefined) payload.startdate = startDate;
   if (endDate !== undefined) payload.enddate = endDate;
-    if (status !== undefined) payload.status = status;
+  if (status !== undefined) payload.status = status;
     if (progress !== undefined) payload.progress = progress; // normalmente calculado por trigger de checklist
   // sempre atualizar updatedat
   payload.updatedat = new Date().toISOString();

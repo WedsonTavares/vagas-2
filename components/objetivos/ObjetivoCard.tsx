@@ -27,6 +27,7 @@ export const ObjetivoCard: React.FC<ObjetivoCardProps> = ({
   return (
     <div
       className={`rounded-lg border p-4 shadow-sm bg-card flex flex-col gap-2 cursor-pointer transition hover:shadow-md ${status === 'concluido' ? 'opacity-70' : ''}`}
+      style={{ marginBottom: '0px', marginTop: '0px' }}
       onClick={e => {
         // Evita abrir checklist ao clicar nos ícones de ação
         if ((e.target as HTMLElement).closest('.card-action')) return;

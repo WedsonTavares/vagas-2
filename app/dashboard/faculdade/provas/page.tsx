@@ -214,7 +214,7 @@ export default function ProvasPage() {
 
       {/* Lista */}
       {loading ? (
-        <div className="text-center py-12">Carregando provas...</div>
+        <div className="text-center py-12">Carregando Provas...</div>
       ) : exams.length === 0 ? (
         <div className="text-center py-12 bg-[color:var(--color-card)] rounded-lg border border-[color:var(--color-border)]">
           <div className="text-6xl mb-4">📝</div>

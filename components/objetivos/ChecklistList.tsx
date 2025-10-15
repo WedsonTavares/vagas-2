@@ -15,7 +15,7 @@ export interface ChecklistListProps {
 
 export const ChecklistList: React.FC<ChecklistListProps> = ({ items, loading, onToggle, onEdit, onDelete }) => {
   if (loading) {
-    return <div className="p-2 text-center text-gray-500">Carregando checklist...</div>;
+    return <div className="p-2 text-center text-gray-500">Carregando Checklist...</div>;
   }
   if (!items.length) {
     return <div className="p-2 text-center text-gray-500">Nenhum item no checklist.</div>;

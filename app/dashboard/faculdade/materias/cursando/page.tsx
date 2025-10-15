@@ -81,7 +81,7 @@ export default function MateriasCursandoPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="text-4xl mb-4">📖</div>
-          <p>Carregando matérias em curso...</p>
+          <p>Carregando Matérias em Curso...</p>
         </div>
       </div>
     );

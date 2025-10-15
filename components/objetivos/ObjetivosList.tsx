@@ -33,13 +33,13 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
     }, [objetivos]);
 
     if (loading) {
-        return <div className="p-4 text-center text-gray-500">Carregando objetivos...</div>;
+        return <div className="p-4 text-center text-gray-500">Carregando Objetivos...</div>;
     }
     if (!objetivos.length) {
         return <div className="p-4 text-center text-gray-500">Nenhum objetivo cadastrado.</div>;
     }
     return (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 lg:gap-4">
             {objetivos.map(obj => (
                 <div key={obj.id}>
                     <ObjetivoCard
@@ -76,7 +76,7 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
                     >
                         {expandedId === obj.id && (
                             loadingChecklist === obj.id ? (
-                                <div className="p-2 text-[color:var(--color-muted-foreground)]">Carregando...</div>
+                                <div className="p-2 text-[color:var(--color-muted-foreground)]">Carregando Objetivos...</div>
                             ) : (
                                 <>
                                     {obj.status !== 'futuro' && (

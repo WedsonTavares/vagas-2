@@ -87,7 +87,7 @@ export default function ObjetivoDetailPage() {
   }
 
   if (loading) {
-    return <div className="p-6">Carregando...</div>;
+    return <div className="p-6">Carregando Objetivos...</div>;
   }
   if (error) {
     return (

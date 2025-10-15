@@ -53,7 +53,7 @@ export default function Certificados() {
       </div>
 
       {loading ? (
-        <div>Carregando...</div>
+        <div>Carregando Certificados...</div>
       ) : items.length === 0 ? (
         <div className="p-6 bg-[color:var(--color-card)] rounded border border-[color:var(--color-border)]">Nenhum certificado encontrado</div>
       ) : (

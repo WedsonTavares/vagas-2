@@ -24,6 +24,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { prepareChartData } from '@/utils/jobUtils';
 
 import { JobStats } from '@/types';
+import Loading from '@/components/ui/loading';
 
 // ========================================
 // INTERFACES E TIPOS
@@ -107,16 +108,7 @@ const JobsChart: React.FC<JobsChartProps> = ({ stats }) => {
    * - UX melhor que gráfico vazio
    */
   if (total === 0) {
-    return (
-      <div className='p-6 h-full flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='text-4xl mb-2'>📊</div>
-          <p className='text-[color:var(--color-muted-foreground)]'>
-            Nenhum dado para exibir
-          </p>
-        </div>
-      </div>
-    );
+    return <Loading message="Nenhum dado para exibir" />;
   }
 
   // ========================================

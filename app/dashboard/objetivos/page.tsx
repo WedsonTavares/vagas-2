@@ -1,11 +1,15 @@
-import React from 'react';
+"use client";
 
-const Objetivos = () => {
-  return (
-    <div>
-      <h1>Objetivos</h1>
-    </div>
-  );
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default Objetivos;
+export default function Objetivos() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redireciona automaticamente para a página de lista de objetivos
+    router.replace("/dashboard/objetivos/lista");
+  }, [router]);
+
+  return null;
+}

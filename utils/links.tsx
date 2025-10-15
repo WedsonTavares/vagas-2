@@ -107,7 +107,7 @@ const links: Array<NavLink> = [
   },
   {
     href: '/dashboard/objetivos',
-    label: 'Objetivos',
+    label: 'Objetivos e Metas',
     icon: <Target size={16} />,
   },
 ];

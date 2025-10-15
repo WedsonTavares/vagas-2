@@ -1,3 +1,4 @@
+"use client";
 // Lista de itens do checklist de um objetivo
 // Renderiza uma lista de ChecklistItem e lida com estados de carregamento/vazio
 import React from 'react';
@@ -26,7 +27,6 @@ export const ChecklistList: React.FC<ChecklistListProps> = ({ items, loading, on
           key={item.id}
           {...item}
           onToggle={onToggle}
-          onEdit={onEdit}
           onDelete={onDelete}
         />
       ))}

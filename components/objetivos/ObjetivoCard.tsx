@@ -8,8 +8,8 @@ export interface ObjetivoCardProps extends Objective {
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onChecklist?: (id: string) => void;
-  onStart?: (id: string) => void; // mover para Em andamento
-  priorityColor?: string; // cor de prioridade (frontend-only)
+  onStart?: (id: string) => void;
+  priorityColor?: string;
   children?: React.ReactNode;
 }
 
@@ -35,8 +35,8 @@ export const ObjetivoCard: React.FC<ObjetivoCardProps> = ({
         onChecklist?.(id);
       }}
     >
-      <div className="flex p-2 items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center  gap-2 min-w-0">
+      <div className="flex  p-2 items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 min-w-0">
           {priorityColor && (
             <span
               className="inline-block w-2.5 h-2.5 rounded-full "

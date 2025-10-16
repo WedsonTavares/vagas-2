@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import JobsChart from '@/components/charts/JobsChart';
 import StatusCards from '@/components/stats/StatusCardsOptimized';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { getJobStats } from '@/lib/api';
 import Loading from '@/components/ui/loading';
 import { JobStats } from '@/types';
 
-const GoalsPage = () => {
+const GoalsPageContent = () => {
   const [stats, setStats] = useState<JobStats | null>(null);
   const [todayApplications, setTodayApplications] = useState(0);
   const [todayStudies, setTodayStudies] = useState(0);
@@ -27,15 +27,15 @@ const GoalsPage = () => {
   }, []);
 
   if (!stats) {
-    return <Loading message='Carregando Metas...' />;
+    return <Loading message='Carregando Dashboard...' />;
   }
 
   return (
     <div className='max-w-7xl mx-auto p-4 flex flex-col gap-6'>
       {/* Cabeçalho */}
       <div>
-        <h1 className='text-2xl font-bold text-[color:var(--color-primary)]'>
-          Dashboard de Metas
+        <h1 className='text-3xl font-bold text-[color:var(--color-primary)]'>
+          Dashboard
         </h1>
         <p className='text-[color:var(--color-muted-foreground)] mt-1 text-sm'>
           Acompanhe seu progresso diário de candidaturas e estudos
@@ -133,5 +133,13 @@ const GoalsPage = () => {
     </div>
   );
 };
+
+const GoalsPageFallback = () => <Loading message='Carregando página...' />;
+
+const GoalsPage = () => (
+  <Suspense fallback={<GoalsPageFallback />}>
+    <GoalsPageContent />
+  </Suspense>
+);
 
 export default GoalsPage;

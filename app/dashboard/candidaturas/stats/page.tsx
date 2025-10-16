@@ -203,10 +203,7 @@ const StatsPage = () => {
         <p className='text-[color:var(--color-muted-foreground)] mb-6'>
           Adicione suas primeiras vagas para ver estatísticas detalhadas
         </p>
-        <Button
-          onClick={handleAddJobClick}
-          className='bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:var(--color-primary)]/90'
-        >
+        <Button onClick={handleAddJobClick} variant='add'>
           + Adicionar Primeira Vaga
         </Button>
       </div>
@@ -286,17 +283,14 @@ const StatsPage = () => {
       {/* Header da página */}
       <div className='flex justify-between items-center mb-6'>
         <div>
-          <h1 className='text-2xl font-bold text-[color:var(--color-primary)]'>
+          <h1 className='text-3xl font-bold text-[color:var(--color-primary)]'>
             Estatísticas de Vagas
           </h1>
           <p className='text-[color:var(--color-muted-foreground)] mt-1 text-sm'>
             Acompanhe o progresso das suas candidaturas
           </p>
         </div>
-        <Button
-          onClick={handleAddJobClick}
-          className='bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:var(--color-primary)]/90'
-        >
+        <Button onClick={handleAddJobClick} variant='add'>
           + Nova Vaga
         </Button>
       </div>

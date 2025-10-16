@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Objective, ObjectiveChecklist } from "../../../../types";
 import { ChecklistList } from "../../../../components/objetivos/ChecklistList";
 import { ChecklistForm } from "../../../../components/objetivos/ChecklistForm";
+import Loading from "../../../../components/ui/loading";
 
 export default function ObjetivoDetailPage() {
   const params = useParams<{ id: string }>();
@@ -87,7 +88,7 @@ export default function ObjetivoDetailPage() {
   }
 
   if (loading) {
-    return <div className="p-6">Carregando Objetivos...</div>;
+    return <Loading message="Carregando Objetivo..." />;
   }
   if (error) {
     return (

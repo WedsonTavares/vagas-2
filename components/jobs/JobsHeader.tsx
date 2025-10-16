@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
@@ -16,6 +16,7 @@ const JobsHeader: React.FC<JobsHeaderProps> = ({
   statusFilter,
 }) => {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
@@ -72,10 +73,18 @@ const JobsHeader: React.FC<JobsHeaderProps> = ({
         </div>
       </div>
       <Button
-        onClick={() => router.push('/dashboard/candidaturas/add-job')}
-        className='bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:var(--color-primary)]/90'
+        onClick={() => startTransition(() => router.push('/dashboard/candidaturas/add-job'))}
+        variant='add'
+        disabled={isPending}
       >
-        + Nova Vaga
+        {isPending ? (
+          <span className='inline-flex items-center gap-2'>
+            <span className='size-4 border-2 border-white/60 border-t-transparent rounded-full animate-spin' aria-hidden />
+            Indo para formulário...
+          </span>
+        ) : (
+          '+ Nova Vaga'
+        )}
       </Button>
     </div>
   );

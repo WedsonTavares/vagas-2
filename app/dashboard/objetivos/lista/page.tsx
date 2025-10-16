@@ -7,6 +7,7 @@ import { Objective } from "../../../../types";
 import ObjectivesChart from "../../../../components/charts/ObjectivesChart";
 import { Modal } from "../../../../components/ui/modal";
 import { Button } from "../../../../components/ui/button";
+import Loading from "../../../../components/ui/loading";
 // Checklist renderizado inline via ObjetivosList
 
 export default function ListaObjetivosPage() {
@@ -52,7 +53,7 @@ export default function ListaObjetivosPage() {
         try {
           const key = `objective:priority:${newObj.id}`;
           localStorage.setItem(key, obj.priorityColor);
-        } catch {}
+        } catch { }
       }
       setObjetivos(prev => [...prev, newObj]);
       setShowCreateObjective(false);
@@ -104,9 +105,16 @@ export default function ListaObjetivosPage() {
     },
   } as const;
 
+  if (loading) {
+    return <Loading message="Carregando Objetivos..." />;
+  }
+
   return (
     <div className="max-w-3xl mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-4">Meus Objetivos e Metas do Semestre</h1>
+      <div className="p-4">
+        <h1 className="text-3xl font-bold mb-1 text-[color:var(--color-primary)]" >Meus Objetivos e Metas do Semestre</h1>
+        <p>Gerenciar objetivos e metas.</p>
+      </div>
 
       {/* Cards de filtros por status */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6 items-stretch">
@@ -114,7 +122,7 @@ export default function ListaObjetivosPage() {
           className={`rounded p-4 text-left transition-colors ${statusFilter === "em_andamento" ? "bg-blue-100/60 border-blue-300 dark:bg-blue-400/10" : "bg-[color:var(--color-card)] border-[color:var(--color-border)]"}`}
           onClick={() => setStatusFilter("em_andamento")}
         >
-          <div className="h-full flex flex-col justify-between">
+          <div className="h-full flex  flex-col justify-between">
             <div className="text-sm text-[color:var(--color-muted-foreground)]">Em andamento</div>
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{andamentoCount}</div>
           </div>
@@ -139,19 +147,24 @@ export default function ListaObjetivosPage() {
         </button>
       </div>
 
-      <div className="mb-4 flex items-center justify-between">
-        <button
-          className={`text-sm underline ${statusFilter === "todos" ? "font-bold" : ""}`}
-          onClick={() => setStatusFilter("todos")}
-        >
-          Limpar filtro
-        </button>
-        {/* Mostrar botão Novo objetivo apenas quando algum card estiver selecionado */}
-        {statusFilter !== 'todos' && (
-          <Button onClick={() => setShowCreateObjective(true)} className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
-            Novo objetivo
-          </Button>
-        )}
+      <div className="mb-4 flex items-center justify-between gap-2">
+        {statusFilter !== 'todos' && filtered.length > 0 ? (
+          <button
+            className="flex items-center gap-1 text-sm font-medium px-3"
+            onClick={() => setStatusFilter('todos')}
+            title="Limpar filtro"
+          >
+            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="inline-block">
+              <path d="M3 4h18" />
+              <path d="M8 4v5.586a1 1 0 0 1-.293.707l-3.414 3.414A1 1 0 0 0 5 15h14a1 1 0 0 0 .707-1.707l-3.414-3.414A1 1 0 0 1 16 9.586V4" />
+              <path d="M10 19h4" />
+            </svg>
+            Limpar filtro
+          </button>
+        ) : <div />}
+        <Button onClick={() => setShowCreateObjective(true)} variant="add">
+          Novo objetivo
+        </Button>
       </div>
 
       {/* Sem filtro: gráfico. Com filtro: lista */}

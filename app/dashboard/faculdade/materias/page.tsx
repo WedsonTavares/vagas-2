@@ -52,27 +52,25 @@ export default function MateriasPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <BackButton href="/dashboard" />
-          <h1 className="text-3xl font-bold text-[color:var(--color-primary)]">
-            Gestão de Matérias
-          </h1>
-          <p className="text-[color:var(--color-muted-foreground)] mt-1">
-            Ciência da Computação - Centro Universitário Estácio
-          </p>
+  <div className="max-w-7xl mx-auto p-2 sm:p-4">
+    {/* Header */}
+    <div className="flex flex-col gap-2 mb-6">
+      <div className="flex items-center gap-2">
+        <BackButton href="/dashboard" />
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[color:var(--color-primary)] leading-tight">Gestão de Matérias</h1>
+          <p className="text-[color:var(--color-muted-foreground)] p-1 sm:p-1 text-sm sm:text-base leading-tight">Ciência da Computação - Centro Universitário Estácio</p>
         </div>
+      </div>
+      <div className="flex w-full sm:w-auto justify-end mt-2 sm:mt-0">
         <Link href="/dashboard/faculdade/materias/estatisticas">
-          <Button className="bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:var(--color-primary)]/90">
-            Ver Estatísticas
-          </Button>
+          <Button className="bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:var(--color-primary)]/90 w-full sm:w-auto">Ver Estatísticas</Button>
         </Link>
       </div>
+    </div>
 
       {/* Cards de Status */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
         {/* Concluídas */}
         <Link href="/dashboard/faculdade/materias/concluidas">
           <div className="bg-[color:var(--color-card)] p-4 rounded-lg border border-[color:var(--color-border)] hover:shadow-lg hover:border-green-300 transition-all duration-200 cursor-pointer group">
@@ -141,7 +139,7 @@ export default function MateriasPage() {
       </div>
 
       {/* Resumo do Progresso */}
-      <div className="bg-[color:var(--color-card)] rounded-lg border border-[color:var(--color-border)] p-6">
+  <div className="bg-[color:var(--color-card)] rounded-lg border border-[color:var(--color-border)] p-4 sm:p-6">
         <h2 className="text-lg font-semibold mb-4">Progresso do Curso</h2>
         
         <div className="space-y-4">
@@ -160,7 +158,7 @@ export default function MateriasPage() {
           </div>
 
           {/* Informações Adicionais */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-center">
             <div>
               <div className="text-lg font-semibold text-[color:var(--color-card-foreground)]">
                 {stats.total}

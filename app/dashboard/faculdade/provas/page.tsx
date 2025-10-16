@@ -3,9 +3,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import BackButton from '@/components/ui/back-button';
 import { useConfirmation } from '@/components/ui/confirmation';
 import { useToast } from '@/components/ui/toast';
 import { Exam } from '@/types';
+import Loading from '@/components/ui/loading';
 
 export default function ProvasPage() {
   const [exams, setExams] = useState<Exam[]>([]);
@@ -156,19 +158,17 @@ export default function ProvasPage() {
   return (
     <div className="max-w-7xl mx-auto p-4">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard/faculdade">
-            <Button variant="ghost" size="sm">← Voltar</Button>
-          </Link>
+        <div className="flex items-center gap-3">
+          <BackButton href="/dashboard/faculdade" />
           <div>
-            <h1 className="text-2xl font-bold text-[color:var(--color-primary)]">Provas e Simulados</h1>
-            <p className="text-[color:var(--color-muted-foreground)] mt-1">Registre provas, local e horários</p>
+            <h1 className="text-3xl font-bold text-[color:var(--color-primary)]">Provas e Simulados</h1>
+            <p className="text-[color:var(--color-muted-foreground)] mt-1 text-sm">Registre provas, local e horários</p>
           </div>
         </div>
       </div>
 
       <div className="mb-4 flex justify-end">
-        <Button onClick={() => setShowForm((s) => !s)} variant="outline">
+        <Button onClick={() => setShowForm((s) => !s)} variant={showForm ? 'outline' : 'add'}>
           {showForm ? 'Cancelar' : 'Adicionar Prova'}
         </Button>
       </div>
@@ -207,14 +207,14 @@ export default function ProvasPage() {
           className="p-2 border border-[color:var(--color-border)] rounded bg-[color:var(--color-card)] text-[color:var(--color-card-foreground)] md:col-span-2"
         />
         <div className="md:col-span-3 flex gap-2 justify-end">
-          <Button type="submit" className="bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)]" disabled={saving}>{saving ? 'Salvando...' : 'Adicionar Prova'}</Button>
+          <Button type="submit" variant="add" disabled={saving}>{saving ? 'Salvando...' : 'Adicionar Prova'}</Button>
         </div>
       </form>
       )}
 
       {/* Lista */}
       {loading ? (
-        <div className="text-center py-12">Carregando Provas...</div>
+        <Loading message='Carregando Provas...' />
       ) : exams.length === 0 ? (
         <div className="text-center py-12 bg-[color:var(--color-card)] rounded-lg border border-[color:var(--color-border)]">
           <div className="text-6xl mb-4">📝</div>

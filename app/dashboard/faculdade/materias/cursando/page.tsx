@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Materia, MateriaStatus } from '@/types';
 import MateriaCard from '@/components/materias/MateriaCard';
 import Pagination from '@/components/ui/pagination';
 import materiasData from '@/data/materias.json';
+import Loading from '@/components/ui/loading';
+import BackButton from '@/components/ui/back-button';
 
 export default function MateriasCursandoPage() {
   const [materias, setMaterias] = useState<Materia[]>([]);
@@ -77,14 +78,7 @@ export default function MateriasCursandoPage() {
   }, [materias, currentPage]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="text-4xl mb-4">📖</div>
-          <p>Carregando Matérias em Curso...</p>
-        </div>
-      </div>
-    );
+    return <Loading message='Carregando Matérias em Curso...' />;
   }
 
   const calcularEstatisticas = () => {
@@ -108,12 +102,8 @@ export default function MateriasCursandoPage() {
     <div className="max-w-7xl mx-auto p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard/faculdade/materias">
-            <Button variant="ghost" size="sm">
-              ← Voltar
-            </Button>
-          </Link>
+        <div className="flex items-center gap-3">
+          <BackButton href="/dashboard/faculdade/materias" />
           <div>
             <h1 className="text-2xl font-bold text-blue-600">
               Matérias Cursando

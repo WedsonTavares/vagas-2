@@ -72,7 +72,7 @@ export const ObjetivoForm: React.FC<ObjetivoFormProps> = ({ initial, onSubmit, l
         </div>
       </div>
       {error && <div className="text-red-600 text-sm">{error}</div>}
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded" disabled={loading}>
+      <button type="submit" className="font-bold bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] px-4 py-2 rounded" disabled={loading}>
         {submitLabel || 'Salvar objetivo'}
       </button>
     </form>

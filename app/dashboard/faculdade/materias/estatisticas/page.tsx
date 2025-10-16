@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Materia, MateriaStatus, Exam } from '@/types';
 import materiasData from '@/data/materias.json';
+import Loading from '@/components/ui/loading';
+import BackButton from '@/components/ui/back-button';
 
 export default function MateriasEstatisticasPage() {
   const [materias, setMaterias] = useState<Materia[]>([]);
@@ -39,14 +40,7 @@ export default function MateriasEstatisticasPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="text-4xl mb-4">📊</div>
-          <p>Carregando Estatísticas...</p>
-        </div>
-      </div>
-    );
+    return <Loading message='Carregando Estatísticas...' />;
   }
 
   const calcularEstatisticasDetalhadas = () => {
@@ -130,17 +124,13 @@ export default function MateriasEstatisticasPage() {
     <div className="max-w-7xl mx-auto p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard/faculdade/materias">
-            <Button variant="ghost" size="sm">
-              ← Voltar
-            </Button>
-          </Link>
+        <div className="flex items-center gap-3">
+          <BackButton href="/dashboard/faculdade/materias" />
           <div>
-            <h1 className="text-2xl font-bold text-[color:var(--color-primary)]">
+            <h1 className="text-3xl font-bold text-[color:var(--color-primary)]">
               Estatísticas Ciência da Computação
             </h1>
-            <p className="text-[color:var(--color-muted-foreground)] mt-1">
+            <p className="text-[color:var(--color-muted-foreground)] mt-1 text-sm">
               Análise detalhada do progresso do curso
             </p>
           </div>

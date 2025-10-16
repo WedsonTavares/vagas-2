@@ -2,9 +2,11 @@
 // Lista de objetivos do usuário
 // Renderiza uma lista de ObjetivoCard e lida com estados de carregamento/vazio
 import React from 'react';
+import { Button } from '../ui/button';
 import { ObjetivoCard } from './ObjetivoCard';
 import { Objective, ObjectiveChecklist } from '../../types';
 import { ChecklistList } from './ChecklistList';
+import Loading from '../ui/loading';
 
 export interface ObjetivosListProps {
     objetivos: Objective[];
@@ -33,7 +35,7 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
     }, [objetivos]);
 
     if (loading) {
-        return <div className="p-4 text-center text-gray-500">Carregando Objetivos...</div>;
+        return <Loading message="Carregando Objetivos..." />;
     }
     if (!objetivos.length) {
         return <div className="p-4 text-center text-gray-500">Nenhum objetivo cadastrado.</div>;
@@ -72,7 +74,7 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
                         >
                             {expandedId === obj.id && (
                                 loadingChecklist === obj.id ? (
-                                    <div className="p-2 text-[color:var(--color-muted-foreground)]">Carregando Objetivos...</div>
+                                    <Loading message="Carregando Checklist..." />
                                 ) : (
                                     <>
                                         {obj.status !== 'futuro' && (
@@ -155,7 +157,7 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
                                                         }}>
                                                             <input name="title" placeholder="Novo item" className="flex-1 border rounded p-2 py-1" />
                                                             <input name="description" placeholder="Descrição (opcional)" className="flex-1 border rounded p-2 py-1" />
-                                                            <button className="px-3 py-1 rounded bg-green-600 text-white" type="submit">Adicionar</button>
+                                                            <Button type="submit" variant="add" className="px-3 py-1">Adicionar Prova</Button>
                                                         </form>
                                                     </div>
                                                 )}

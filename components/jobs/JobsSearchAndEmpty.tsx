@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
@@ -14,6 +14,7 @@ const JobsSearchAndEmpty: React.FC<JobsSearchAndEmptyProps> = ({
   filteredJobsCount,
 }) => {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   return (
     <>
@@ -120,10 +121,18 @@ const JobsSearchAndEmpty: React.FC<JobsSearchAndEmptyProps> = ({
             </Button>
           ) : null}
           <Button
-            onClick={() => router.push('/dashboard/candidaturas/add-job')}
-            className='bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] hover:bg-[color:var(--color-primary)]/90'
+            onClick={() => startTransition(() => router.push('/dashboard/candidaturas/add-job'))}
+            variant='add'
+            disabled={isPending}
           >
-            + {searchTerm ? 'Adicionar Nova Vaga' : 'Adicionar Primeira Vaga'}
+            {isPending ? (
+              <span className='inline-flex items-center gap-2'>
+                <span className='size-4 border-2 border-white/60 border-t-transparent rounded-full animate-spin' aria-hidden />
+                Indo...
+              </span>
+            ) : (
+              `+ ${searchTerm ? 'Adicionar Nova Vaga' : 'Adicionar Primeira Vaga'}`
+            )}
           </Button>
         </div>
       )}

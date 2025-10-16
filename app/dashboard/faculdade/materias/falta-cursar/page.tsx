@@ -89,7 +89,7 @@ export default function MateriasFaltaCursarPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="text-4xl mb-4">⏳</div>
-          <p>Carregando matérias pendentes...</p>
+          <p>Carregando Matérias Pendentes...</p>
         </div>
       </div>
     );

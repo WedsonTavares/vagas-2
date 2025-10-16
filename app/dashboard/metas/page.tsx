@@ -27,7 +27,7 @@ const GoalsPage = () => {
   }, []);
 
   if (!stats) {
-    return <Loading message='Carregando...' />;
+    return <Loading message='Carregando Metas...' />;
   }
 
   return (

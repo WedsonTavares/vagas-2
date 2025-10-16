@@ -9,16 +9,15 @@ export interface ChecklistListProps {
   items: ObjectiveChecklist[];
   loading?: boolean;
   onToggle?: (id: string) => void;
-  onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
 }
 
-export const ChecklistList: React.FC<ChecklistListProps> = ({ items, loading, onToggle, onEdit, onDelete }) => {
+export const ChecklistList: React.FC<ChecklistListProps> = ({ items, loading, onToggle, onDelete }) => {
   if (loading) {
-    return <div className="p-2 text-center text-gray-500">Carregando checklist...</div>;
+    return <div className=" text-center text-gray-500">Carregando Checklist...</div>;
   }
   if (!items.length) {
-    return <div className="p-2 text-center text-gray-500">Nenhum item no checklist.</div>;
+    return <div className=" text-center text-gray-500">Nenhum item no checklist.</div>;
   }
   return (
     <div className="flex flex-col gap-1">

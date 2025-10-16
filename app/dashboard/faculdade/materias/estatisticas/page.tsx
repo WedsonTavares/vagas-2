@@ -43,7 +43,7 @@ export default function MateriasEstatisticasPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="text-4xl mb-4">📊</div>
-          <p>Carregando estatísticas...</p>
+          <p>Carregando Estatísticas...</p>
         </div>
       </div>
     );
@@ -303,7 +303,7 @@ export default function MateriasEstatisticasPage() {
         <div className="bg-[color:var(--color-card)] rounded-lg border border-[color:var(--color-border)] p-6">
           <h2 className="text-lg font-semibold mb-4">Provas e Simulados</h2>
           {examsLoading ? (
-            <div>Carregando provas...</div>
+            <div>Carregando Provas...</div>
           ) : (
             <div className="space-y-3">
               <div className="flex justify-between items-center">

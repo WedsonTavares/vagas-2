@@ -33,31 +33,26 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
     }, [objetivos]);
 
     if (loading) {
-        return <div className="p-4 text-center text-gray-500">Carregando objetivos...</div>;
+        return <div className="p-4 text-center text-gray-500">Carregando Objetivos...</div>;
     }
     if (!objetivos.length) {
         return <div className="p-4 text-center text-gray-500">Nenhum objetivo cadastrado.</div>;
     }
     return (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 gap-3 lg:gap-4 items-stretch">
             {objetivos.map(obj => (
-                <div key={obj.id}>
+                <div key={obj.id} className="h-full">
                     <ObjetivoCard
                         {...obj}
                         onEdit={onEdit}
                         onDelete={async (id) => {
-                            // se o caller não tratou, fazemos aqui a deleção e removemos da lista
                             if (onDelete) return onDelete(id);
                             await fetch(`/api/objetivos/${id}`, { method: 'DELETE' });
-                            // Não temos setter do pai aqui; a remoção será refletida pelo pai via props.
                         }}
                         onStart={() => onStart?.(obj.id)}
                         priorityColor={priorityColors[obj.id]}
                         onChecklist={() => {
-                            if (obj.status === 'futuro') {
-                                // Em 'A Fazer' não expandimos nem buscamos checklist
-                                return;
-                            }
+                            if (obj.status === 'futuro') return;
                             if (expandedId === obj.id) {
                                 setExpandedId(null);
                                 return;
@@ -69,34 +64,58 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
                                 .then(data => setChecklists(prev => ({ ...prev, [obj.id]: Array.isArray(data) ? data : [] })))
                                 .finally(() => setLoadingChecklist(null));
                         }}
-                    />
-                    <div
-                        className={`overflow-hidden transition-all duration-300 ${expandedId === obj.id ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'} border rounded-lg p-4`}
-                        aria-hidden={expandedId !== obj.id}
                     >
-                        {expandedId === obj.id && (
-                            loadingChecklist === obj.id ? (
-                                <div className="p-2 text-[color:var(--color-muted-foreground)]">Carregando...</div>
-                            ) : (
-                                <>
-                                    {obj.status !== 'futuro' && (
-                                        <>
-                                            <ChecklistList
-                                                items={checklists[obj.id] || []}
-                                                onToggle={async (checkId) => {
-                                                    const current = (checklists[obj.id] || []).find(i => i.id === checkId);
-                                                    const res = await fetch(`/api/objetivos/${obj.id}/checklists/${checkId}`, {
-                                                        method: 'PATCH',
-                                                        headers: { 'Content-Type': 'application/json' },
-                                                        body: JSON.stringify({ completed: !current?.completed })
-                                                    });
-                                                    if (res.ok) {
-                                                        const updated = await res.json();
+                        {/* Checklist expansion inside the card */}
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ${expandedId === obj.id ? 'max-h-[500px] opacity-100 py-4' : 'max-h-0 opacity-0 py-0'} px-4 bg-[color:var(--color-card)]`}
+                            aria-hidden={expandedId !== obj.id}
+                        >
+                            {expandedId === obj.id && (
+                                loadingChecklist === obj.id ? (
+                                    <div className="p-2 text-[color:var(--color-muted-foreground)]">Carregando Objetivos...</div>
+                                ) : (
+                                    <>
+                                        {obj.status !== 'futuro' && (
+                                            <>
+                                                <ChecklistList
+                                                    items={checklists[obj.id] || []}
+                                                    onToggle={async (checkId) => {
+                                                        const current = (checklists[obj.id] || []).find(i => i.id === checkId);
+                                                        const res = await fetch(`/api/objetivos/${obj.id}/checklists/${checkId}`, {
+                                                            method: 'PATCH',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({ completed: !current?.completed })
+                                                        });
+                                                        if (res.ok) {
+                                                            const updated = await res.json();
+                                                            setChecklists(prev => ({
+                                                                ...prev,
+                                                                [obj.id]: (prev[obj.id] || []).map(i => i.id === checkId ? updated : i)
+                                                            }));
+                                                            const list = (checklists[obj.id] || []).map(i => i.id === checkId ? updated : i);
+                                                            const total = list.length;
+                                                            const done = list.filter(i => i.completed).length;
+                                                            let newStatus: Objective['status'] = obj.status;
+                                                            if (done === total && total > 0) newStatus = 'concluido';
+                                                            else if (done > 0) newStatus = 'em_andamento';
+                                                            else newStatus = 'futuro';
+                                                            if (newStatus !== obj.status) {
+                                                                await fetch(`/api/objetivos/${obj.id}`, {
+                                                                    method: 'PATCH',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ status: newStatus })
+                                                                });
+                                                                onStatusChange?.(obj.id, newStatus);
+                                                            }
+                                                        }
+                                                    }}
+                                                    onDelete={async (checkId) => {
+                                                        await fetch(`/api/objetivos/${obj.id}/checklists/${checkId}`, { method: 'DELETE' });
                                                         setChecklists(prev => ({
                                                             ...prev,
-                                                            [obj.id]: (prev[obj.id] || []).map(i => i.id === checkId ? updated : i)
+                                                            [obj.id]: (prev[obj.id] || []).filter(i => i.id !== checkId)
                                                         }));
-                                                        const list = (checklists[obj.id] || []).map(i => i.id === checkId ? updated : i);
+                                                        const list = (checklists[obj.id] || []).filter(i => i.id !== checkId);
                                                         const total = list.length;
                                                         const done = list.filter(i => i.completed).length;
                                                         let newStatus: Objective['status'] = obj.status;
@@ -111,64 +130,42 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
                                                             });
                                                             onStatusChange?.(obj.id, newStatus);
                                                         }
-                                                    }
-                                                }}
-                                                onDelete={async (checkId) => {
-                                                    await fetch(`/api/objetivos/${obj.id}/checklists/${checkId}`, { method: 'DELETE' });
-                                                    setChecklists(prev => ({
-                                                        ...prev,
-                                                        [obj.id]: (prev[obj.id] || []).filter(i => i.id !== checkId)
-                                                    }));
-                                                    const list = (checklists[obj.id] || []).filter(i => i.id !== checkId);
-                                                    const total = list.length;
-                                                    const done = list.filter(i => i.completed).length;
-                                                    let newStatus: Objective['status'] = obj.status;
-                                                    if (done === total && total > 0) newStatus = 'concluido';
-                                                    else if (done > 0) newStatus = 'em_andamento';
-                                                    else newStatus = 'futuro';
-                                                    if (newStatus !== obj.status) {
-                                                        await fetch(`/api/objetivos/${obj.id}`, {
-                                                            method: 'PATCH',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify({ status: newStatus })
-                                                        });
-                                                        onStatusChange?.(obj.id, newStatus);
-                                                    }
-                                                }}
-                                            />
-                                            {obj.status === 'em_andamento' && (
-                                                <div className="mt-3">
-                                                    <form className="flex flex-col sm:flex-row gap-2" onSubmit={async (e) => {
-                                                        e.preventDefault();
-                                                        const form = e.currentTarget as HTMLFormElement;
-                                                        const fd = new FormData(form);
-                                                        const title = String(fd.get('title') || '').trim();
-                                                        const description = String(fd.get('description') || '').trim();
-                                                        if (!title) return;
-                                                        const res = await fetch(`/api/objetivos/${obj.id}/checklists`, {
-                                                            method: 'POST',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify({ title, description: description || undefined })
-                                                        });
-                                                        if (res.ok) {
-                                                            const created = await res.json();
-                                                            setChecklists(prev => ({ ...prev, [obj.id]: [...(prev[obj.id] || []), created] }));
-                                                            (form.querySelector('input[name="title"]') as HTMLInputElement).value = '';
-                                                            (form.querySelector('input[name="description"]') as HTMLInputElement).value = '';
-                                                        }
-                                                    }}>
-                                                        <input name="title" placeholder="Novo item" className="flex-1 border rounded px-2 py-1" />
-                                                        <input name="description" placeholder="Descrição (opcional)" className="flex-1 border rounded px-2 py-1" />
-                                                        <button className="px-3 py-1 rounded bg-green-600 text-white" type="submit">Adicionar</button>
-                                                    </form>
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-                                </>
-                            )
-                        )}
-                    </div>
+                                                    }}
+                                                />
+                                                {obj.status === 'em_andamento' && (
+                                                    <div className="mt-4">
+                                                        <form className="flex flex-col sm:flex-row gap-2" onSubmit={async (e) => {
+                                                            e.preventDefault();
+                                                            const form = e.currentTarget as HTMLFormElement;
+                                                            const fd = new FormData(form);
+                                                            const title = String(fd.get('title') || '').trim();
+                                                            const description = String(fd.get('description') || '').trim();
+                                                            if (!title) return;
+                                                            const res = await fetch(`/api/objetivos/${obj.id}/checklists`, {
+                                                                method: 'POST',
+                                                                headers: { 'Content-Type': 'application/json' },
+                                                                body: JSON.stringify({ title, description: description || undefined })
+                                                            });
+                                                            if (res.ok) {
+                                                                const created = await res.json();
+                                                                setChecklists(prev => ({ ...prev, [obj.id]: [...(prev[obj.id] || []), created] }));
+                                                                (form.querySelector('input[name="title"]') as HTMLInputElement).value = '';
+                                                                (form.querySelector('input[name="description"]') as HTMLInputElement).value = '';
+                                                            }
+                                                        }}>
+                                                            <input name="title" placeholder="Novo item" className="flex-1 border rounded p-2 py-1" />
+                                                            <input name="description" placeholder="Descrição (opcional)" className="flex-1 border rounded p-2 py-1" />
+                                                            <button className="px-3 py-1 rounded bg-green-600 text-white" type="submit">Adicionar</button>
+                                                        </form>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </>
+                                )
+                            )}
+                        </div>
+                    </ObjetivoCard>
                 </div>
             ))}
         </div>

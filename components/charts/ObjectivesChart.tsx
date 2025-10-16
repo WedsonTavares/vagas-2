@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import Loading from '@/components/ui/loading';
 
 type ObjectiveStatus = 'a_fazer' | 'em_andamento' | 'concluido';
 
@@ -34,12 +35,7 @@ export default function ObjectivesChart({ stats }: { stats: ObjectivesStats }) {
 
   if (total === 0) {
     return (
-      <div className="p-6 h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-2">📊</div>
-          <p className="text-[color:var(--color-muted-foreground)]">Nenhum dado para exibir</p>
-        </div>
-      </div>
+        <Loading message="Carregando Objetivos e Metas..." />   
     );
   }
 
@@ -79,7 +75,7 @@ export default function ObjectivesChart({ stats }: { stats: ObjectivesStats }) {
               ))}
             </Pie>
             <Tooltip
-              formatter={tooltipFormatter as any}
+              formatter={tooltipFormatter as (value: number, name: string) => React.ReactNode[]}
               labelFormatter={() => ''}
               contentStyle={{
                 backgroundColor: 'var(--color-card)',

@@ -106,30 +106,36 @@ export default function ListaObjetivosPage() {
 
   return (
     <div className="max-w-3xl mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-4">Meus Objetivos e Metas do Semestre</h1>
+      <h1 className="text-3xl font-bold mb-4">Meus Objetivos e Metas do Semestre</h1>
 
       {/* Cards de filtros por status */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6 items-stretch">
         <button
-          className={`rounded border p-4 text-left transition-colors ${statusFilter === "em_andamento" ? "bg-blue-100/60 border-blue-300 dark:bg-blue-400/10" : "bg-[color:var(--color-card)] border-[color:var(--color-border)]"}`}
+          className={`rounded p-4 text-left transition-colors ${statusFilter === "em_andamento" ? "bg-blue-100/60 border-blue-300 dark:bg-blue-400/10" : "bg-[color:var(--color-card)] border-[color:var(--color-border)]"}`}
           onClick={() => setStatusFilter("em_andamento")}
         >
-          <div className="text-sm text-[color:var(--color-muted-foreground)]">Em andamento</div>
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{andamentoCount}</div>
+          <div className="h-full flex flex-col justify-between">
+            <div className="text-sm text-[color:var(--color-muted-foreground)]">Em andamento</div>
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{andamentoCount}</div>
+          </div>
         </button>
         <button
-          className={`rounded border p-4 text-left transition-colors ${statusFilter === "concluido" ? "bg-green-100/60 border-green-300 dark:bg-green-400/10" : "bg-[color:var(--color-card)] border-[color:var(--color-border)]"}`}
+          className={`rounded p-4 text-left transition-colors ${statusFilter === "concluido" ? "bg-green-100/60 border-green-300 dark:bg-green-400/10" : "bg-[color:var(--color-card)] border-[color:var(--color-border)]"}`}
           onClick={() => setStatusFilter("concluido")}
         >
-          <div className="text-sm text-[color:var(--color-muted-foreground)]">Concluídos</div>
-          <div className="text-2xl font-bold text-green-600 dark:text-green-400">{concluidoCount}</div>
+          <div className="h-full flex flex-col justify-between">
+            <div className="text-sm text-[color:var(--color-muted-foreground)]">Concluídos</div>
+            <div className="text-2xl font-bold text-green-500 dark:text-green-300">{concluidoCount}</div>
+          </div>
         </button>
         <button
-          className={`rounded border p-4 text-left transition-colors ${statusFilter === "futuro" ? "bg-orange-100/60 border-orange-300 dark:bg-orange-400/10" : "bg-[color:var(--color-card)] border-[color:var(--color-border)]"}`}
+          className={`rounded p-4 text-left transition-colors ${statusFilter === "futuro" ? "bg-orange-100/60 border-orange-300 dark:bg-orange-400/10" : "bg-[color:var(--color-card)] border-[color:var(--color-border)]"}`}
           onClick={() => setStatusFilter("futuro")}
         >
-          <div className="text-sm text-[color:var(--color-muted-foreground)]">A Fazer</div>
-          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{aFazerCount}</div>
+          <div className="h-full flex flex-col justify-between">
+            <div className="text-sm text-[color:var(--color-muted-foreground)]">A Fazer</div>
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{aFazerCount}</div>
+          </div>
         </button>
       </div>
 

@@ -323,7 +323,7 @@ const JobsPageContent = () => {
   }, []);
 
   if (loading) {
-    return <Loading message='Carregando...' />;
+    return <Loading message='Carregando Vagas...' />;
   }
 
   return (

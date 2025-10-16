@@ -17,7 +17,7 @@ export const ChecklistItem: React.FC<ChecklistItemProps> = ({ id, title, complet
     setLoading(false);
   };
   return (
-    <div className="flex items-center gap-2 p-2 border-b">
+    <div className="flex items-center gap-2 p-1">
       <button
         className={`p-1 rounded ${completed ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'} disabled:opacity-50`}
         onClick={handleToggle}

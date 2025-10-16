@@ -75,7 +75,7 @@ export default function ObjectivesChart({ stats }: { stats: ObjectivesStats }) {
               ))}
             </Pie>
             <Tooltip
-              formatter={tooltipFormatter as any}
+              formatter={tooltipFormatter as (value: number, name: string) => React.ReactNode[]}
               labelFormatter={() => ''}
               contentStyle={{
                 backgroundColor: 'var(--color-card)',

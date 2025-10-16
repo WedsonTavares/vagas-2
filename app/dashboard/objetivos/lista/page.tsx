@@ -110,10 +110,10 @@ export default function ListaObjetivosPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto py-8">
-      <div className="p-4">
-        <h1 className="text-3xl font-bold mb-1 text-[color:var(--color-primary)]" >Meus Objetivos e Metas do Semestre</h1>
-        <p>Gerenciar objetivos e metas.</p>
+    <div className="max-w-3xl mx-auto py-8 px-2 sm:px-0">
+      <div className="p-0 sm:p-4 text-left">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-1 text-[color:var(--color-primary)] text-left">Meus Objetivos e Metas do Semestre</h1>
+        <p className="text-left mb-3 sm:mb-0">Gerenciar objetivos e metas.</p>
       </div>
 
       {/* Cards de filtros por status */}

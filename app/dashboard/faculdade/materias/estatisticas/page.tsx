@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Materia, MateriaStatus, Exam } from '@/types';
 import materiasData from '@/data/materias.json';
 import Loading from '@/components/ui/loading';

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
 import { Materia, MateriaStatus } from '@/types';
 import MateriaCard from '@/components/materias/MateriaCard';
 import Pagination from '@/components/ui/pagination';

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import BackButton from '@/components/ui/back-button';
 import { useConfirmation } from '@/components/ui/confirmation';

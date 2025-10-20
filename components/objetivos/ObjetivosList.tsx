@@ -69,6 +69,7 @@ export const ObjetivosList: React.FC<ObjetivosListProps> = ({ objetivos, loading
                     >
                         {/* Checklist expansion inside the card */}
                         <div
+                            onClick={(e) => e.stopPropagation()}
                             className={`overflow-hidden transition-all duration-300 ${expandedId === obj.id ? 'max-h-[500px] opacity-100 py-4' : 'max-h-0 opacity-0 py-0'} px-4 bg-[color:var(--color-card)]`}
                             aria-hidden={expandedId !== obj.id}
                         >
